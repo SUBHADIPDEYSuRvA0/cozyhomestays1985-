@@ -1,0 +1,1492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CozyHomestay - Login & Signup</title>
+  <link rel="stylesheet" href="styles.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <style>
+    /* Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+/* Reset and Base Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+:root {
+  --primary-color: #0a2463;
+  --primary-light: #1e56a0;
+  --primary-dark: #061539;
+  --secondary-color: #3e92cc;
+  --accent-color: #d8315b;
+  --light-color: #fffaff;
+  --dark-color: #1e1b22;
+  --success-color: #2ecc71;
+  --warning-color: #f39c12;
+  --error-color: #e74c3c;
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 5px 15px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.15);
+  --transition: all 0.3s ease;
+}
+/* Navbar Styles */
+.navbar {
+  background-color: #001341;
+  color: #fff;
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 999;
+}
+
+.navbar .logo {
+  font-size: 1.5em;
+  font-weight: bold;
+}
+
+.navbar .nav-links {
+  list-style: none;
+  display: flex;
+  gap: 20px;
+}
+
+.navbar .nav-links li a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.navbar .nav-links li a.btn {
+  background: #0a2463;
+  padding: 6px 14px;
+  border-radius: 5px;
+  transition: background 0.3s;
+}
+
+.navbar .nav-links li a.btn:hover {
+  background: #0a2463;
+}
+
+/* Footer Styles */
+.footer {
+  background-color: #001638;
+  color: #fff;
+  text-align: center;
+  padding: 20px;
+  /* margin-top: 50px; */
+  font-size: 14px;
+}
+
+.footer a {
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.footer a:hover {
+  text-decoration: underline;
+}
+
+
+.body {
+  min-height: 80vh;
+  background-color: #f0f4f8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Animated Background */
+.animated-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #f0f4f8 0%, #d0e1f9 100%);
+  z-index: -1;
+  overflow: hidden;
+}
+
+.light {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%);
+  opacity: 0.6;
+  filter: blur(20px);
+}
+
+.light-1 {
+  width: 300px;
+  height: 300px;
+  top: 10%;
+  left: 15%;
+  animation: float 15s ease-in-out infinite;
+}
+
+.light-2 {
+  width: 400px;
+  height: 400px;
+  bottom: 5%;
+  right: 10%;
+  animation: float 18s ease-in-out infinite reverse;
+}
+
+.light-3 {
+  width: 200px;
+  height: 200px;
+  top: 60%;
+  left: 5%;
+  animation: float 12s ease-in-out infinite 2s;
+}
+
+.light-4 {
+  width: 250px;
+  height: 250px;
+  top: 20%;
+  right: 20%;
+  animation: float 20s ease-in-out infinite 1s;
+}
+
+/* Container */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  min-height: 962px;
+  background-color: white;
+  border-radius: 20px;
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  display: flex;
+  position: relative;
+}
+
+/* Left Panel - Forms */
+.left-panel {
+  width: 50%;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background-color: white;
+  z-index: 2;
+}
+
+.logo {
+  text-align: center;
+  /* margin-bottom: 30px; */
+}
+
+.logo h1 {
+  color: var(--primary-color);
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.logo p {
+  color: var(--primary-light);
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+/* Form Toggle Buttons */
+.form-toggle-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.form-toggle-buttons button {
+  padding: 10px 25px;
+  border: none;
+  background-color: transparent;
+  color: var(--dark-color);
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  position: relative;
+  transition: var(--transition);
+  opacity: 0.6;
+}
+
+.form-toggle-buttons button.active {
+  opacity: 1;
+}
+
+.form-toggle-buttons button::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background-color: var(--primary-color);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.3s ease;
+}
+
+.form-toggle-buttons button.active::after {
+  transform: scaleX(1);
+}
+
+/* Forms Section */
+.forms-section {
+  flex: 1;
+  position: relative;
+}
+
+.form-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  /* height: 100%; */
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(20px);
+  transition: all 0.4s ease;
+}
+
+.form-container.active {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(0);
+}
+
+.form-container h2 {
+  color: var(--primary-color);
+  font-size: 24px;
+  margin-bottom: 25px;
+  text-align: center;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-bottom: 25px;
+}
+
+.input-field {
+  position: relative;
+}
+
+.input-field i {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--primary-light);
+  font-size: 16px;
+}
+
+.input-field .toggle-password {
+  left: auto;
+  right: 15px;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: var(--transition);
+}
+
+.input-field .toggle-password:hover {
+  opacity: 1;
+}
+
+.input-field input {
+  width: 100%;
+  padding: 15px 15px 15px 45px;
+  border: 1px solid rgba(30, 86, 160, 0.2);
+  border-radius: 12px;
+  font-size: 14px;
+  transition: var(--transition);
+  background-color: rgba(30, 86, 160, 0.03);
+}
+
+.input-field input:focus {
+  border-color: var(--primary-light);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(30, 86, 160, 0.1);
+  background-color: white;
+}
+
+.forgot-password {
+  text-align: right;
+  margin-bottom: 25px;
+}
+
+.forgot-password a {
+  color: var(--primary-light);
+  font-size: 14px;
+  text-decoration: none;
+  transition: var(--transition);
+}
+
+.forgot-password a:hover {
+  color: var(--primary-color);
+  text-decoration: underline;
+}
+
+.submit-btn {
+  width: 100%;
+  padding: 15px;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.submit-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: 0.5s;
+  z-index: -1;
+}
+
+.submit-btn:hover::before {
+  left: 100%;
+}
+
+.submit-btn:hover {
+  background-color: var(--primary-light);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(30, 86, 160, 0.3);
+}
+
+.submit-btn:active {
+  transform: translateY(0);
+}
+
+.submit-btn i {
+  font-size: 14px;
+  transition: transform 0.3s ease;
+}
+
+.submit-btn:hover i {
+  transform: translateX(5px);
+}
+
+/* OTP Section */
+.otp-section {
+  display: flex;
+  gap: 10px;
+}
+
+.otp-section .input-field {
+  flex: 1;
+}
+
+.otp-btn {
+  padding: 0 20px;
+  background-color: var(--secondary-color);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.otp-btn:hover {
+  background-color: var(--primary-light);
+}
+
+.otp-btn .otp-loader {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  opacity: 0;
+  visibility: hidden;
+  transition: var(--transition);
+}
+
+.otp-btn.loading span {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.otp-btn.loading .otp-loader {
+  opacity: 1;
+  visibility: visible;
+  animation: spin 1s linear infinite;
+}
+
+/* Right Panel - Illustrations */
+.right-panel {
+  width: 50%;
+  background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+  position: relative;
+  overflow: hidden;
+}
+
+.scene {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+/* Sky */
+.sky {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 70%;
+  background: linear-gradient(to bottom, #0a2463, #1e56a0);
+  overflow: hidden;
+}
+
+.cloud {
+  position: absolute;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 50px;
+}
+
+.cloud::before,
+.cloud::after {
+  content: '';
+  position: absolute;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+}
+
+.cloud-1 {
+  width: 100px;
+  height: 30px;
+  top: 20%;
+  left: -100px;
+  animation: moveCloud 25s linear infinite;
+}
+
+.cloud-1::before {
+  width: 40px;
+  height: 40px;
+  top: -20px;
+  left: 15px;
+}
+
+.cloud-1::after {
+  width: 50px;
+  height: 50px;
+  top: -25px;
+  left: 45px;
+}
+
+.cloud-2 {
+  width: 80px;
+  height: 25px;
+  top: 40%;
+  left: -80px;
+  animation: moveCloud 30s linear infinite;
+  animation-delay: 5s;
+}
+
+.cloud-2::before {
+  width: 35px;
+  height: 35px;
+  top: -18px;
+  left: 10px;
+}
+
+.cloud-2::after {
+  width: 40px;
+  height: 40px;
+  top: -20px;
+  left: 35px;
+}
+
+.cloud-3 {
+  width: 120px;
+  height: 35px;
+  top: 10%;
+  left: -120px;
+  animation: moveCloud 35s linear infinite;
+  animation-delay: 10s;
+}
+
+.cloud-3::before {
+  width: 45px;
+  height: 45px;
+  top: -22px;
+  left: 20px;
+}
+
+.cloud-3::after {
+  width: 55px;
+  height: 55px;
+  top: -28px;
+  left: 55px;
+}
+
+.sun {
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  background: radial-gradient(circle, #ffeb3b, #ff9800);
+  border-radius: 50%;
+  top: 15%;
+  right: 15%;
+  box-shadow: 0 0 40px rgba(255, 235, 59, 0.6);
+  animation: pulseSun 5s ease-in-out infinite;
+}
+
+.stars {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 3s ease;
+}
+
+.star {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background-color: white;
+  border-radius: 50%;
+}
+
+.star::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-color: white;
+  opacity: 0;
+  animation: twinkle 2s ease-in-out infinite;
+}
+
+.star-1 {
+  top: 20%;
+  left: 15%;
+}
+
+.star-2 {
+  top: 15%;
+  left: 40%;
+  animation-delay: 0.5s;
+}
+
+.star-3 {
+  top: 25%;
+  left: 65%;
+  animation-delay: 1s;
+}
+
+.star-4 {
+  top: 10%;
+  left: 80%;
+  animation-delay: 1.5s;
+}
+
+.star-5 {
+  top: 30%;
+  left: 25%;
+  animation-delay: 0.7s;
+}
+
+/* Landscape */
+.landscape {
+  position: absolute;
+  bottom: 30%;
+  left: 0;
+  width: 100%;
+  height: 20%;
+}
+
+.mountain {
+  position: absolute;
+  bottom: 0;
+  border-radius: 50%;
+}
+
+.mountain-1 {
+  width: 250px;
+  height: 150px;
+  background-color: #0a2463;
+  left: -50px;
+  border-radius: 50% 50% 0 0;
+}
+
+.mountain-2 {
+  width: 350px;
+  height: 200px;
+  background-color: #061539;
+  left: 100px;
+  border-radius: 50% 50% 0 0;
+}
+
+.mountain-3 {
+  width: 300px;
+  height: 180px;
+  background-color: #0a2463;
+  right: -50px;
+  border-radius: 50% 50% 0 0;
+}
+
+/* Buildings */
+.buildings {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 30%;
+}
+
+/* Villa */
+.villa {
+  position: absolute;
+  bottom: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 100px;
+  animation: float 6s ease-in-out infinite;
+}
+
+.villa-body {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 70%;
+  background-color: #f5f5f5;
+  border-radius: 5px;
+}
+
+.villa-roof {
+  position: absolute;
+  bottom: 70%;
+  width: 120%;
+  height: 40px;
+  background-color: #e74c3c;
+  left: -10%;
+  clip-path: polygon(0 100%, 50% 0, 100% 100%);
+}
+
+.villa-door {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 30px;
+  background-color: #795548;
+  border-radius: 3px 3px 0 0;
+}
+
+.villa-window {
+  position: absolute;
+  width: 15px;
+  height: 15px;
+  background-color: #3498db;
+  border: 2px solid #2980b9;
+}
+
+.villa-window-1 {
+  bottom: 40%;
+  left: 20%;
+}
+
+.villa-window-2 {
+  bottom: 40%;
+  right: 20%;
+}
+
+.villa-chimney {
+  position: absolute;
+  bottom: 90%;
+  right: 20%;
+  width: 10px;
+  height: 20px;
+  background-color: #c0392b;
+}
+
+.smoke {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 10px;
+  height: 10px;
+  background-color: rgba(255, 255, 255, 0.7);
+  border-radius: 50%;
+  opacity: 0;
+}
+
+.smoke-1 {
+  animation: smokeRise 3s ease-out infinite;
+}
+
+.smoke-2 {
+  animation: smokeRise 3s ease-out infinite 1s;
+}
+
+.smoke-3 {
+  animation: smokeRise 3s ease-out infinite 2s;
+}
+
+/* Cottages */
+.cottage {
+  position: absolute;
+  bottom: 5%;
+  width: 80px;
+  height: 70px;
+}
+
+.cottage-1 {
+  left: 15%;
+  animation: float 7s ease-in-out infinite 1s;
+}
+
+.cottage-2 {
+  right: 15%;
+  animation: float 8s ease-in-out infinite 0.5s;
+}
+
+.cottage-body {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 60%;
+  background-color: #f5f5f5;
+  border-radius: 5px;
+}
+
+.cottage-roof {
+  position: absolute;
+  bottom: 60%;
+  width: 120%;
+  height: 30px;
+  background-color: #3498db;
+  left: -10%;
+  clip-path: polygon(0 100%, 50% 0, 100% 100%);
+}
+
+.cottage-door {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 15px;
+  height: 25px;
+  background-color: #795548;
+  border-radius: 3px 3px 0 0;
+}
+
+.cottage-window {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background-color: #f1c40f;
+  border: 2px solid #f39c12;
+  bottom: 30%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* Trees */
+.tree {
+  position: absolute;
+  bottom: 5%;
+}
+
+.tree-1 {
+  left: 35%;
+  animation: sway 5s ease-in-out infinite;
+}
+
+.tree-2 {
+  right: 35%;
+  animation: sway 6s ease-in-out infinite reverse;
+}
+
+.tree-3 {
+  left: 75%;
+  animation: sway 7s ease-in-out infinite 1s;
+}
+
+.tree-trunk {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 8px;
+  height: 30px;
+  background-color: #795548;
+  border-radius: 2px;
+}
+
+.tree-leaves {
+  position: absolute;
+  bottom: 25px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 30px;
+  height: 40px;
+  background-color: #2ecc71;
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+}
+
+/* Welcome Text */
+.welcome-text {
+  position: absolute;
+  bottom: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  color: white;
+  width: 80%;
+  z-index: 10;
+}
+
+.welcome-text h2 {
+  font-size: 24px;
+  margin-bottom: 10px;
+  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.welcome-text p {
+  font-size: 14px;
+  opacity: 0.9;
+  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+/* Animations */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes sway {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(3deg);
+  }
+  75% {
+    transform: rotate(-3deg);
+  }
+}
+
+@keyframes moveCloud {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(calc(100vw + 200px));
+  }
+}
+
+@keyframes pulseSun {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 40px rgba(255, 235, 59, 0.6);
+  }
+  50% {
+    transform: scale(1.1);
+    box-shadow: 0 0 60px rgba(255, 235, 59, 0.8);
+  }
+}
+
+@keyframes twinkle {
+  0%, 100% {
+    opacity: 0.2;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.5);
+  }
+}
+
+@keyframes smokeRise {
+  0% {
+    opacity: 0.8;
+    transform: translate(-50%, 0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -30px) scale(3);
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+  .container {
+    flex-direction: column;
+    max-height: none;
+  }
+  
+  .left-panel, .right-panel {
+    width: 100%;
+  }
+  
+  .right-panel {
+    height: 300px;
+    order: -1;
+  }
+  
+  .welcome-text {
+    bottom: 20%;
+  }
+}
+
+@media (max-width: 576px) {
+  .container {
+    border-radius: 15px;
+  }
+  
+  .left-panel {
+    padding: 30px 20px;
+  }
+  
+  .logo h1 {
+    font-size: 28px;
+  }
+  
+  .form-toggle-buttons button {
+    padding: 8px 20px;
+    font-size: 14px;
+  }
+  
+  .form-container h2 {
+    font-size: 22px;
+    margin-bottom: 20px;
+  }
+  
+  .input-field input {
+    padding: 12px 12px 12px 40px;
+  }
+  
+  .otp-section {
+    flex-direction: column;
+  }
+  
+  .otp-btn {
+    padding: 12px;
+    margin-top: 5px;
+  }
+  
+  .right-panel {
+    height: 250px;
+  }
+  
+  .welcome-text h2 {
+    font-size: 20px;
+  }
+  
+  .welcome-text p {
+    font-size: 12px;
+  }
+
+    .navbar, .footer {
+      background-color: #002B5B;
+    }
+
+    /* White text for navbar and footer */
+    .navbar-brand, .nav-link, .footer-text {
+      color: white !important;
+    }
+
+    /* Animated logo text */
+    .logo-animation {
+      font-weight: bold;
+      font-size: 24px;
+      background: linear-gradient(90deg, white, #f0f0f0, white);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: shimmer 3s infinite linear;
+    }
+
+    @keyframes shimmer {
+      0% {
+        background-position: -100%;
+      }
+      100% {
+        background-position: 200%;
+      }
+    }
+
+    .footer {
+      padding: 20px 0;
+      text-align: center;
+    }
+}.custom-toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #fff3cd; /* yellow background */
+    color: #01195c; /* dark yellow text */
+    padding: 12px 20px;
+    border: 1px solid #00aeff;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    z-index: 9999;
+    font-family: sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .close-btn {
+    cursor: pointer;
+    font-weight: bold;
+  }
+  </style>
+  </head>
+<body>
+<header class="navbar">
+ <img src="/logo/logo.png" alt="" style="height: 50px;">
+ <% if (message) { %>
+  <div id="customToast" class="custom-toast">
+    <%= message %>
+    <span class="close-btn" onclick="hideToast()">×</span>
+  </div>
+<% } %>
+<script>
+  function hideToast() {
+    const toast = document.getElementById('customToast');
+    if (toast) toast.style.display = 'none';
+  }
+
+  // Auto-hide after 4 seconds
+  setTimeout(hideToast, 4000);
+</script>
+
+
+</header>
+ <div class="body">
+    
+  <div class="animated-background">
+    <div class="light light-1"></div>
+    <div class="light light-2"></div>
+    <div class="light light-3"></div>
+    <div class="light light-4"></div>
+  </div>
+
+  <div class="container">
+    <div class="left-panel">
+      <div class="logo">
+        <h1><img src="/logo/logo2.png" alt="" style="height: 60px;"></h1>
+        <p>Find your cozy place away from home</p>
+      </div>
+
+      <div class="form-toggle-buttons">
+        <button id="login-toggle" class="active">Login</button>
+        <button id="signup-toggle">Signup</button>
+      </div>
+
+      <div class="forms-section" style="height: fit-content;">
+        <div id="login-form" class="form-container active">
+          <h2>Welcome Back</h2>
+          <form action="/host/auth/login" method="POST">
+            <div class="input-group">
+              <div class="input-field">
+                <i class="fas fa-envelope"></i>
+                <input type="email" name="email" placeholder="Email" required />
+              </div>
+              <div class="input-field">
+                <i class="fas fa-lock"></i>
+                <input type="password" name="password" placeholder="Password" required />
+                <i class="fas fa-eye-slash toggle-password"></i>
+              </div>
+            </div>
+            <div class="forgot-password">
+              <a href="#">Forgot password?</a>
+            </div>
+            <button class="submit-btn" type="submit">
+              <span>Login</span>
+              <i class="fas fa-arrow-right"></i>
+            </button>
+          </form>
+        </div>
+
+        <div id="signup-form" class="form-container">
+          <h2>Create Account</h2>
+          <form action="/host/auth/register" method="POST" >
+            <div class="input-group">
+              <div class="input-field">
+                <i class="fas fa-user"></i>
+                <input type="text" name="name" placeholder="Full Name" required />
+              </div>
+              <div class="input-field">
+                <i class="fas fa-envelope"></i>
+                <input type="email" name="email" placeholder="Email" required />
+              </div>
+              <div class="input-field">
+                <i class="fas fa-lock"></i>
+                <input type="password" name="password" placeholder="Password" required />
+                <i class="fas fa-eye-slash toggle-password"></i>
+              </div>
+              <div class="input-field">
+                <i class="fas fa-phone"></i>
+                <input type="text" name="phone" placeholder="Phone Number" required />
+              </div>
+              <div class="otp-section">
+                <div class="input-field">
+                  <i class="fas fa-shield-alt"></i>
+                  <input type="text" name="otp" placeholder="Enter OTP" required />
+                </div>
+                <button class="otp-btn" type="button" id="send-otp-btn">
+                  <span>Send OTP</span>
+                  <div class="otp-loader"></div>
+                </button>
+              </div>
+            </div>
+            <button class="submit-btn" type="submit">
+              <span>Signup</span>
+              <i class="fas fa-arrow-right"></i>
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="right-panel">
+      <div class="scene">
+        <div class="sky">
+          <div class="cloud cloud-1"></div>
+          <div class="cloud cloud-2"></div>
+          <div class="cloud cloud-3"></div>
+          <div class="sun"></div>
+          <div class="stars">
+            <div class="star star-1"></div>
+            <div class="star star-2"></div>
+            <div class="star star-3"></div>
+            <div class="star star-4"></div>
+            <div class="star star-5"></div>
+          </div>
+        </div>
+        
+        <div class="landscape">
+          <div class="mountain mountain-1"></div>
+          <div class="mountain mountain-2"></div>
+          <div class="mountain mountain-3"></div>
+        </div>
+        
+        <div class="buildings">
+          <div class="villa">
+            <div class="villa-body"></div>
+            <div class="villa-roof"></div>
+            <div class="villa-door"></div>
+            <div class="villa-window villa-window-1"></div>
+            <div class="villa-window villa-window-2"></div>
+            <div class="villa-chimney">
+              <div class="smoke smoke-1"></div>
+              <div class="smoke smoke-2"></div>
+              <div class="smoke smoke-3"></div>
+            </div>
+          </div>
+          
+          <div class="cottage cottage-1">
+            <div class="cottage-body"></div>
+            <div class="cottage-roof"></div>
+            <div class="cottage-door"></div>
+            <div class="cottage-window"></div>
+          </div>
+          
+          <div class="cottage cottage-2">
+            <div class="cottage-body"></div>
+            <div class="cottage-roof"></div>
+            <div class="cottage-door"></div>
+            <div class="cottage-window"></div>
+          </div>
+          
+          <div class="tree tree-1">
+            <div class="tree-trunk"></div>
+            <div class="tree-leaves"></div>
+          </div>
+          
+          <div class="tree tree-2">
+            <div class="tree-trunk"></div>
+            <div class="tree-leaves"></div>
+          </div>
+          
+          <div class="tree tree-3">
+            <div class="tree-trunk"></div>
+            <div class="tree-leaves"></div>
+          </div>
+        </div>
+        
+        <div class="welcome-text">
+          
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script >
+    document.addEventListener('DOMContentLoaded', function() {
+  // Form toggle functionality
+  const loginToggle = document.getElementById('login-toggle');
+  const signupToggle = document.getElementById('signup-toggle');
+  const loginForm = document.getElementById('login-form');
+  const signupForm = document.getElementById('signup-form');
+
+  loginToggle.addEventListener('click', () => {
+    loginToggle.classList.add('active');
+    signupToggle.classList.remove('active');
+    loginForm.classList.add('active');
+    signupForm.classList.remove('active');
+  });
+
+  signupToggle.addEventListener('click', () => {
+    signupToggle.classList.add('active');
+    loginToggle.classList.remove('active');
+    signupForm.classList.add('active');
+    loginForm.classList.remove('active');
+  });
+
+  // Password visibility toggle
+  const togglePasswordBtns = document.querySelectorAll('.toggle-password');
+  togglePasswordBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const passwordInput = btn.previousElementSibling;
+      if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        btn.classList.remove('fa-eye-slash');
+        btn.classList.add('fa-eye');
+      } else {
+        passwordInput.type = 'password';
+        btn.classList.remove('fa-eye');
+        btn.classList.add('fa-eye-slash');
+      }
+    });
+  });
+
+  // Day/Night cycle animation
+  const sky = document.querySelector('.sky');
+  const stars = document.querySelector('.stars');
+  const sun = document.querySelector('.sun');
+  
+  function updateDayNightCycle() {
+    const now = new Date();
+    const hours = now.getHours();
+    
+    // Night time (7 PM - 6 AM)
+    if (hours >= 19 || hours < 6) {
+      sky.style.background = 'linear-gradient(to bottom, #0a1128, #0a2463)';
+      stars.style.opacity = '1';
+      sun.style.opacity = '0.3';
+      sun.style.boxShadow = '0 0 20px rgba(255, 235, 59, 0.3)';
+    } 
+    // Dawn/Dusk (6-7 AM or 6-7 PM)
+    else if (hours === 6 || hours === 18) {
+      sky.style.background = 'linear-gradient(to bottom, #ff9e80, #3e92cc)';
+      stars.style.opacity = hours === 6 ? '0.5' : '0.3';
+      sun.style.opacity = '0.8';
+      sun.style.boxShadow = '0 0 30px rgba(255, 152, 0, 0.6)';
+    } 
+    // Day time (7 AM - 6 PM)
+    else {
+      sky.style.background = 'linear-gradient(to bottom, #0a2463, #1e56a0)';
+      stars.style.opacity = '0';
+      sun.style.opacity = '1';
+      sun.style.boxShadow = '0 0 40px rgba(255, 235, 59, 0.6)';
+    }
+  }
+  
+  // Initial update
+  updateDayNightCycle();
+  
+  // Update every minute
+  setInterval(updateDayNightCycle, 60000);
+
+  // Send OTP functionality
+  const sendOtpBtn = document.getElementById('send-otp-btn');
+  sendOtpBtn.addEventListener('click', async () => {
+    const name = document.querySelector('#signup-form input[name="name"]').value.trim();
+    const email = document.querySelector('#signup-form input[name="email"]').value.trim();
+
+    if (!name || !email) {
+      showNotification('Please enter your name and email to receive OTP.', 'error');
+      return;
+    }
+
+    // Show loading state
+    sendOtpBtn.classList.add('loading');
+
+    try {
+      const response = await fetch('/host/auth/sendotp', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ name, email })
+      });
+
+      const data = await response.json();
+      
+      // Remove loading state
+      sendOtpBtn.classList.remove('loading');
+      
+      if (response.ok) {
+        showNotification(data.message || 'OTP sent successfully!', 'success');
+      } else {
+        showNotification(data.error || 'Failed to send OTP.', 'error');
+      }
+    } catch (error) {
+      console.error('Error sending OTP:', error);
+      sendOtpBtn.classList.remove('loading');
+      showNotification('Failed to send OTP. Please try again.', 'error');
+    }
+  });
+
+  // Notification function
+  function showNotification(message, type = 'info') {
+    // Check if notification container exists, if not create it
+    let notificationContainer = document.querySelector('.notification-container');
+    if (!notificationContainer) {
+      notificationContainer = document.createElement('div');
+      notificationContainer.className = 'notification-container';
+      document.body.appendChild(notificationContainer);
+      
+      // Add styles for notification container
+      notificationContainer.style.position = 'fixed';
+      notificationContainer.style.top = '20px';
+      notificationContainer.style.right = '20px';
+      notificationContainer.style.zIndex = '1000';
+      notificationContainer.style.display = 'flex';
+      notificationContainer.style.flexDirection = 'column';
+      notificationContainer.style.gap = '10px';
+    }
+    
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    notification.textContent = message;
+    
+    // Style the notification
+    notification.style.padding = '12px 20px';
+    notification.style.borderRadius = '8px';
+    notification.style.boxShadow = '0 3px 10px rgba(0,0,0,0.1)';
+    notification.style.marginBottom = '10px';
+    notification.style.animation = 'slideIn 0.3s ease forwards';
+    notification.style.cursor = 'pointer';
+    
+    // Set color based on type
+    if (type === 'success') {
+      notification.style.backgroundColor = '#2ecc71';
+      notification.style.color = 'white';
+    } else if (type === 'error') {
+      notification.style.backgroundColor = '#e74c3c';
+      notification.style.color = 'white';
+    } else {
+      notification.style.backgroundColor = '#3498db';
+      notification.style.color = 'white';
+    }
+    
+    // Add to container
+    notificationContainer.appendChild(notification);
+    
+    // Remove after 5 seconds
+    setTimeout(() => {
+      notification.style.animation = 'slideOut 0.3s ease forwards';
+      setTimeout(() => {
+        notification.remove();
+      }, 300);
+    }, 5000);
+    
+    // Click to dismiss
+    notification.addEventListener('click', () => {
+      notification.style.animation = 'slideOut 0.3s ease forwards';
+      setTimeout(() => {
+        notification.remove();
+      }, 300);
+    });
+  }
+  
+  // Add keyframe animations for notifications
+  const style = document.createElement('style');
+  style.textContent = `
+    @keyframes slideIn {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+    
+    @keyframes slideOut {
+      from {
+        transform: translateX(0);
+        opacity: 1;
+      }
+      to {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+    }
+  `;
+  document.head.appendChild(style);
+});
+  </script>
+ </div>
+<footer class="footer">
+  <p>&copy; 2025 CozyHomestay. All rights reserved.</p>
+  <p><a href="/privacy">Privacy Policy</a> | <a href="/terms">Terms of Service</a></p>
+</footer>
+
+</body>
+</html>

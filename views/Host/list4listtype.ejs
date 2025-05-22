@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Property Location Form - Stylish Layout</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <style>
+    /* Reset some basic styling */
+    body, html {
+      height: 100%;
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #ffffff, #ffffff);
+      color: #333;
+    }
+
+    /* Container with shadow and rounded corners */
+    .container-custom {
+      max-width: 1100px;
+      margin: 40px auto;
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 25px 45px rgba(0,0,0,0.15);
+      display: flex;
+      overflow: hidden;
+      height: 450px;
+      user-select: none;
+    }
+
+    /* Left side: form */
+    .form-side {
+      flex: 1;
+      padding: 40px 50px;
+      overflow-y: auto;
+      background: #fafafa;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .form-side h4 {
+      font-weight: 700;
+      margin-bottom: 30px;
+      color: #000000;
+      letter-spacing: 1px;
+    }
+
+    .form-label {
+      font-weight: 600;
+      color: #000000;
+    }
+
+    .form-control {
+      border-radius: 10px;
+      border: 1.5px solid #ccc;
+      transition: border-color 0.3s ease;
+    }
+
+    .form-control:focus {
+      border-color: #ffffff;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+      outline: none;
+    }
+
+    /* button[type="submit"] {
+      background: #011f46;
+      border: none;
+      padding: 14px 0;
+      font-weight: 700;
+      font-size: 1.1rem;
+      border-radius: 12px;
+      margin-top: 25px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    } */
+
+    /* button[type="submit"]:hover {
+      background: #ffffff;
+    } */
+
+    /* Right side: map and search */
+    .map-side {
+      flex: 1.15;
+      position: relative;
+      background: linear-gradient(135deg, #ffffff, #a1a1a1);
+      display: flex;
+      flex-direction: column;
+      padding: 30px 40px 40px;
+    }
+
+    #searchBox {
+      border-radius: 10px;
+      padding: 12px 15px;
+      font-size: 1rem;
+      border: none;
+      margin-bottom: 20px;
+      box-shadow: 0 3px 15px rgba(0,0,0,0.2);
+    }
+
+    #searchBox:focus {
+      outline: none;
+      box-shadow: 0 0 12px 3px rgba(0, 21, 65, 0.8);
+    }
+
+    label[for="searchBox"] {
+      color: #000000;
+      font-weight: 600;
+      margin-bottom: 8px;
+      user-select: none;
+    }
+
+    #map {
+      flex-grow: 1;
+      border-radius: 20px;
+      box-shadow: 0 20px 35px rgba(0, 0, 0, 0.4);
+    }
+
+    .autocomplete-suggestions {
+      position: absolute;
+      z-index: 1050;
+      top: 70px;
+      left: 40px;
+      right: 40px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      max-height: 250px;
+      overflow-y: auto;
+      font-size: 0.95rem;
+    }
+
+    .autocomplete-suggestions div {
+      padding: 12px 18px;
+      cursor: pointer;
+      color: #000000;
+      font-weight: 600;
+      border-bottom: 1px solid #eee;
+      transition: background-color 0.2s ease;
+    }
+
+    .autocomplete-suggestions div:hover {
+      background-color: #ffffff;
+      color: white;
+    }
+
+    /* Scrollbar styling for suggestions */
+    .autocomplete-suggestions::-webkit-scrollbar {
+      width: 6px;
+    }
+    .autocomplete-suggestions::-webkit-scrollbar-thumb {
+      background: #ffffff;
+      border-radius: 3px;
+    }
+
+    /* Responsive tweaks */
+    @media (max-width: 991px) {
+      .container-custom {
+        flex-direction: column;
+        height: auto;
+      }
+      .map-side, .form-side {
+        flex: none;
+        padding: 25px;
+        height: 450px;
+      }
+      #map {
+        height: 100%;
+      }
+      .autocomplete-suggestions {
+        top: 55px;
+        left: 25px;
+        right: 25px;
+      }
+    }
+     header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 60px;
+      background: #001f4d;
+      color: white;
+      display: flex;
+      align-items: center;
+      padding: 0 2rem;
+      font-weight: 600;
+      font-size: 1.5rem;
+      z-index: 1000;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    footer {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: white;
+      height: 70px;
+      box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 1000;
+    }
+
+    .progress-bar-container {
+      position: fixed;
+      bottom: 70px;
+      left: 0; right: 0;
+      height: 10px;
+      background: #fff;
+      box-shadow: inset 0 0 6px #000;
+      border: 1px solid #000;
+      border-radius: 10px;
+      overflow: hidden;
+      max-width: 100vw;
+      z-index: 1100;
+    }
+
+    .progress-water-fill {
+      height: 100%;
+      width: 30%;
+      background: linear-gradient(270deg, #000, #000000, #000);
+      background-size: 600% 600%;
+      animation: waveAnimation 8s linear infinite;
+      border-radius: 10px 0 0 10px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .progress-water-fill::before {
+      content: '';
+      position: absolute;
+      top: -15px;
+      left: 0;
+      width: 200%;
+      height: 30px;
+      background: rgba(0, 0, 0, 0.6);
+      border-radius: 40%;
+      animation: waveMotion 4s linear infinite;
+      filter: blur(1.5px);
+      opacity: 0.7;
+    }
+
+    @keyframes waveAnimation {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 100% 50%; }
+    }
+
+    @keyframes waveMotion {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    main {
+      position: fixed;
+      top: 60px;
+      bottom: 70px;
+      left: 0; right: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 1rem;
+    }
+
+    .content-wrapper {
+      display: flex;
+      width: 100%;
+      max-width: 1200px;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .lottie-container {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-width: 300px;
+    }
+
+    .lottie-container dotlottie-player {
+      height: 80vh;
+      width: auto;
+    }
+
+    .text-container {
+      flex: 1;
+      padding: 2rem;
+      min-width: 300px;
+    }
+
+    .text-container h1 {
+      font-size: 3rem;
+      font-weight: bold;
+      color: #001f4d;
+    }
+
+    .text-container p {
+      font-size: 1.25rem;
+      color: #444;
+      margin-top: 1rem;
+    }
+ .option-card:hover, .option-card.selected {
+    border: 2px solid #0d6efd;
+    box-shadow: 0 0 10px rgba(13, 110, 253, 0.25);
+  }
+
+  .option-card input:checked + label {
+    border: 2px solid #0d6efd;
+  }
+
+  .icon-container {
+    width: 80px;
+    height: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  input[type="radio"]:checked + label {
+    border: 2px solid #0d6efd !important;
+    background-color: #e9f5ff;
+  }
+    .btn-next,
+    .btn-back {
+      padding: 0.6rem 1.8rem;
+      font-size: 1.1rem;
+      border: none;
+      border-radius: 9999px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      min-width: 100px;
+      font-weight: 600;
+    }
+
+    .btn-next {
+      background-color: #000;
+      color: #fff;
+    }
+
+    .btn-next:hover {
+      background-color: #333;
+    }
+
+    .btn-back {
+      background-color: #e0e0e0;
+      color: #000;
+    }
+
+    .btn-back:hover {
+      background-color: #ccc;
+    }
+     .listing-card input[type="radio"] {
+    display: none;
+  }
+
+ .listing-card input[type="radio"] {
+    display: none;
+  }
+
+  .listing-card label {
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.3s;
+    padding: 20px;
+    border-radius: 1rem;
+  }
+
+  .listing-card input[type="radio"]:checked + label {
+    border-color: #0d6efd;
+    background-color: #f0f8ff;
+    box-shadow: 0 0 10px rgba(13, 110, 253, 0.3);
+  }
+
+  .icon-style {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 50%;
+    margin: 0 auto 15px auto;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  .icon-style iconify-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .card-title {
+    font-weight: 600;
+    font-size: 1.25rem;
+  }
+  </style>
+  <script src="https://code.iconify.design/iconify-icon/1.0.8/iconify-icon.min.js"></script>
+</head>
+<body>
+<header>CozyHomeStays</header>
+   <main>
+  <div class="container-custom">
+    <!-- Form area -->
+     <header>CozyHomeStays</header><div class="form-side">
+   
+
+     <form action="/host/property/<%= propertyId %>/create" method="POST" class="container mt-5">
+
+  <!-- Heading -->
+  <h2 class="text-center mb-4">Choose Listing Type</h2>
+
+  <div class="row justify-content-center gap-4">
+
+    <!-- Room Wise Option -->
+    <div class="col-md-5">
+      <input type="radio" id="roomWise" name="listingType" value="roomWise" class="d-none">
+      <label for="roomWise" class="card text-center shadow-sm rounded-4 p-3 option-card">
+        <div class="icon-container bg-primary-subtle rounded-circle mx-auto mb-3 p-3">
+          <iconify-icon icon="mdi:bed-single-outline" width="50" height="50" class="text-primary"></iconify-icon>
+        </div>
+        <div class="card-body">
+          <h5 class="card-title">Room Wise</h5>
+          <p class="card-text">List individual rooms for rent within a property.</p>
+        </div>
+      </label>
+    </div>
+
+    <!-- Entire Property Option -->
+    <div class="col-md-5">
+      <input type="radio" id="entireProperty" name="listingType" value="entireProperty" class="d-none">
+      <label for="entireProperty" class="card text-center shadow-sm rounded-4 p-3 option-card">
+        <div class="icon-container bg-success-subtle rounded-circle mx-auto mb-3 p-3">
+          <iconify-icon icon="mdi:home-city-outline" width="50" height="50" class="text-success"></iconify-icon>
+        </div>
+        <div class="card-body">
+          <h5 class="card-title">Entire Property</h5>
+          <p class="card-text">List the entire property for guests or tenants.</p>
+        </div>
+      </label>
+    </div>
+
+  </div>
+
+  <!-- Progress bar -->
+  <div class="progress-bar-container" role="progressbar" aria-valuenow="15" aria-valuemin="0" aria-valuemax="100">
+        <div class="progress-water-fill"></div>
+      </div>
+ <footer>
+        <a href="/host/<%= propertyId %>/selectmap" class="btn-back" >Back</a>
+        <button type="submit" class="btn-next">Next</button>
+      </footer>
+</form>
+
+</main> 
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<script>
+  const optionCards = document.querySelectorAll('.option-card');
+  optionCards.forEach(card => {
+    card.addEventListener('click', () => {
+      optionCards.forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+      const input = card.previousElementSibling;
+      if (input) input.checked = true;
+    });
+  });
+</script>
+
+</body>
+</html>

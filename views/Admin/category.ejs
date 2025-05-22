@@ -1,0 +1,100 @@
+<%- include('layout/header') %>
+
+<main class="main-content" >
+  <%- include('layout/navbar') %>
+    <div class="dashboard-content">
+  <script type="module" src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs"></script>
+
+  <div class="container mt-4"  style="display: flex; flex-direction: column; align-items: center;">
+    
+    <h2 style="margin-bottom: 20px; font-size: 24px; color: #333;">Create Category</h2>
+    
+    <form action="/admin/category/create" method="POST">
+      <div style="margin-bottom: 15px;">
+        <label for="title" style="display: block; font-size: 16px; color: #555;">Category Title</label>
+        <input type="text" name="title" required placeholder="Enter category title" style="width: 100%; border-radius: 8px; padding: 12px; border: 1px solid #ccc;">
+      </div>
+
+      <div style="margin-bottom: 15px;">
+        <label for="icon" style="display: block; font-size: 16px; color: #555;">Select Icon (Lottie)</label>
+        <select id="icon" name="icon" required onchange="previewLottie(this.value)" style="width: 100%; border-radius: 8px; padding: 12px; border: 1px solid #ccc;">
+          <option value="">-- Select an icon --</option>
+          <option value="https://lottie.host/72ad2eba-7e80-4f00-a38e-5c81c4ae87eb/HgWs1VjCwl.lottie">🏨 Hotel</option>
+          <option value="https://lottie.host/7f0da710-bb30-495c-8813-d732a36f2c3d/xlw9MOcm8b.lottie">🏡 Cottage</option>
+          <option value="https://lottie.host/8714d4bc-31be-4059-809b-fb6e489d1eab/kEcX5fATd1.lottie">🏢 Apartment</option>
+          <option value="https://lottie.host/d05e8a75-26c4-404c-b91e-c5579399dc04/494Y1FJo4h.lottie">🏠 Villa</option>
+          <option value="https://lottie.host/96b429c8-9082-4322-8e6d-afbca27327e1/Nvxmr8CWV9.lottie">🏰 Farm House</option>
+          <option value="https://lottie.host/1b8750c5-6572-4f0e-bd2b-3ccf71d4609b/LT9kvDuBjk.lottie">🏡 Home Stays</option>
+        </select>
+      </div>
+
+      <div style="margin-bottom: 15px;">
+        <label style="display: block; font-size: 16px; color: #555;">Icon Preview</label>
+        <div id="lottiePreview" style="min-height: 200px; border: 1px solid #ccc; padding: 10px; border-radius: 8px; background-color: #f8f9fa;"></div>
+      </div>
+
+      <button type="submit" style="width: 100%; padding: 12px; font-size: 16px; border-radius: 8px; background-color: #007bff; color: white; border: none;">Create</button>
+    </form>
+
+    <!-- Category Table -->
+    <h3 style="margin-top: 40px; font-size: 20px; color: #333;">All Categories</h3>
+    <table style="width: 100%; margin-top: 15px; border-collapse: collapse; font-size: 15px;">
+      <thead>
+        <tr style="background-color: #e9ecef;">
+          <th style="padding: 10px; text-align: left; border: 1px solid #dee2e6;">#</th>
+          <th style="padding: 10px; text-align: left; border: 1px solid #dee2e6;">Title</th>
+          <th style="padding: 10px; text-align: left; border: 1px solid #dee2e6;">Icon</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (categories && categories.length > 0) { %>
+          <% categories.forEach((category, index) => { %>
+            <tr style="height: 300px;">
+              <td style="padding: 10px; border: 1px solid #dee2e6;"><%= index + 1 %></td>
+              <td style="padding: 10px; border: 1px solid #dee2e6;"><%= category.title %></td>
+              <td style="padding: 10px; border: 1px solid #dee2e6;">
+                <dotlottie-player
+                  src="<%= category.icon %>"
+                  background="transparent"
+                  speed="1"
+                  style="width: 300px; height: 300px;"
+                  loop autoplay>
+                </dotlottie-player>
+              </td>
+            </tr>
+          <% }) %>
+        <% } else { %>
+          <tr>
+            <td colspan="3" style="padding: 10px; text-align: center; color: #888;">No categories found.</td>
+          </tr>
+        <% } %>
+      </tbody>
+    </table>
+
+  </div>
+
+  <script>
+    function previewLottie(url) {
+      const preview = document.getElementById("lottiePreview");
+      if (url) {
+        preview.innerHTML = `
+          <dotlottie-player
+            src="${url}"
+            background="transparent"
+            speed="1"
+            style="width: 100%; height: 200px; border-radius: 8px;"
+            loop autoplay>
+          </dotlottie-player>
+        `;
+      } else {
+        preview.innerHTML = "";
+      }
+    }
+  </script>
+  </div>
+</main>
+
+<%- include('layout/footer') %>
+
+<!-- Lottie Files fallback -->
+<script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>

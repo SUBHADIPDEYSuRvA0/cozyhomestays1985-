@@ -1,0 +1,239 @@
+ </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+    // Sidebar Toggle
+    const toggleSidebar = document.getElementById('toggleSidebar');
+    const sidebar = document.querySelector('.sidebar');
+    const menuToggle = document.getElementById('menuToggle');
+    
+    toggleSidebar.addEventListener('click', function() {
+        sidebar.classList.toggle('collapsed');
+    });
+    
+    menuToggle.addEventListener('click', function() {
+        sidebar.classList.toggle('mobile-open');
+    });
+    
+    // Close sidebar when clicking outside on mobile
+    document.addEventListener('click', function(e) {
+        if (window.innerWidth <= 768) {
+            if (!sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
+                sidebar.classList.remove('mobile-open');
+            }
+        }
+    });
+    
+    // Resize handler
+    window.addEventListener('resize', function() {
+        if (window.innerWidth > 768) {
+            sidebar.classList.remove('mobile-open');
+        }
+    });
+    
+    // Chart configurations
+    // Small charts for stat cards
+    const createMiniChart = (ctx, color, data) => {
+        return new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                datasets: [{
+                    data: data,
+                    borderColor: color,
+                    borderWidth: 2,
+                    pointRadius: 0,
+                    tension: 0.4,
+                    fill: true,
+                    backgroundColor: (context) => {
+                        const ctx = context.chart.ctx;
+                        const gradient = ctx.createLinearGradient(0, 0, 0, 60);
+                        gradient.addColorStop(0, `${color}30`);
+                        gradient.addColorStop(1, `${color}00`);
+                        return gradient;
+                    }
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        enabled: false
+                    }
+                },
+                scales: {
+                    x: {
+                        display: false
+                    },
+                    y: {
+                        display: false
+                    }
+                },
+                elements: {
+                    line: {
+                        tension: 0.4
+                    }
+                }
+            }
+        });
+    };
+    
+    // Create mini charts for stat cards
+    createMiniChart(document.getElementById('propertiesChart'), '#2563eb', [20, 25, 28, 30, 35, 42]);
+    createMiniChart(document.getElementById('bookingsChart'), '#10b981', [80, 90, 100, 120, 140, 156]);
+    createMiniChart(document.getElementById('revenueChart'), '#8b5cf6', [12000, 14000, 16000, 18000, 21000, 24500]);
+    createMiniChart(document.getElementById('customersChart'), '#f59e0b', [200, 220, 240, 260, 290, 312]);
+    
+    // Revenue Overview Chart
+    const revenueOverviewChart = new Chart(document.getElementById('revenueOverviewChart'), {
+        type: 'line',
+        data: {
+            labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+            datasets: [{
+                label: 'This Month',
+                data: [5800, 8200, 6000, 9500],
+                borderColor: '#2563eb',
+                backgroundColor: '#2563eb20',
+                tension: 0.4,
+                fill: true
+            }, {
+                label: 'Last Month',
+                data: [4500, 6500, 5200, 7800],
+                borderColor: '#8b5cf6',
+                backgroundColor: '#8b5cf620',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top',
+                    align: 'end',
+                    labels: {
+                        usePointStyle: true,
+                        boxWidth: 6
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    grid: {
+                        display: false
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        borderDash: [5, 5]
+                    },
+                    ticks: {
+                        callback: function(value) {
+                            return '$' + value.toLocaleString();
+                        }
+                    }
+                }
+            }
+        }
+    });
+    
+    // Property Types Chart
+    const propertyTypesChart = new Chart(document.getElementById('propertyTypesChart'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Villas', 'Cottages', 'Cabins', 'Beach Houses', 'Apartments'],
+            datasets: [{
+                data: [35, 25, 15, 15, 10],
+                backgroundColor: ['#2563eb', '#10b981', '#8b5cf6', '#f59e0b', '#ef4444'],
+                borderWidth: 0,
+                borderRadius: 5
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        usePointStyle: true,
+                        boxWidth: 6,
+                        padding: 15
+                    }
+                }
+            },
+            cutout: '70%'
+        }
+    });
+    
+    // Booking Status Chart
+    const bookingStatusChart = new Chart(document.getElementById('bookingStatusChart'), {
+        type: 'bar',
+        data: {
+            labels: ['Confirmed', 'Pending', 'Cancelled', 'Completed'],
+            datasets: [{
+                data: [65, 20, 5, 10],
+                backgroundColor: ['#10b981', '#f59e0b', '#ef4444', '#2563eb'],
+                borderRadius: 5,
+                maxBarThickness: 30
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                x: {
+                    grid: {
+                        display: false
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        borderDash: [5, 5]
+                    },
+                    ticks: {
+                        precision: 0
+                    }
+                }
+            }
+        }
+    });
+    
+    // Add animation to chart buttons
+    const chartButtons = document.querySelectorAll('.chart-actions button');
+    chartButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const parent = this.parentElement;
+            parent.querySelectorAll('button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            this.classList.add('active');
+        });
+    });
+    
+    // Add hover effect to table rows
+    const tableRows = document.querySelectorAll('tbody tr');
+    tableRows.forEach(row => {
+        row.addEventListener('mouseenter', function() {
+            this.style.backgroundColor = 'var(--bg-color)';
+        });
+        
+        row.addEventListener('mouseleave', function() {
+            this.style.backgroundColor = '';
+        });
+    });
+});</script>
+</body>
+</html>

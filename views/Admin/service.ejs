@@ -1,0 +1,22 @@
+<%- include('layout/header') %>
+
+<main class="main-content" >
+  <%- include('layout/navbar') %>
+  <div class="dashboard-content">
+    <h2>Update User Service Purchase</h2>
+<form action="/admin/service/update/<%= services._id %>" method="POST" style=" background-color: #f5f5f5; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+    
+    <label for="servicerate" style="display: block; margin-bottom: 8px; font-weight: 600;">Service Rate (%)</label>
+    <input type="number" id="servicerate" name="servicerate" value="<%= services.servicerate %>" required
+      style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc; margin-bottom: 20px;">
+
+    <button type="submit" 
+      style="padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">
+      💾 Update Service
+    </button>
+  </form>
+  </div>
+
+</main>
+
+<%- include('layout/footer') %>

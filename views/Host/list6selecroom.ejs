@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CozyHomeStays - Room Details</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --primary-light: #dbeafe;
+      --secondary: #64748b;
+      --success: #10b981;
+      --danger: #ef4444;
+      --dark: #0f172a;
+      --light: #f8fafc;
+      --border-radius: 0.5rem;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f1f5f9;
+      color: #334155;
+      min-height: 100vh;
+      padding-top: 70px;
+      padding-bottom: 90px;
+    }
+
+    header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 60px;
+      background: #001f4d;
+      color: white;
+      display: flex;
+      align-items: center;
+      padding: 0 2rem;
+      font-weight: 600;
+      font-size: 1.5rem;
+      z-index: 1000;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    footer {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: white;
+      height: 70px;
+      box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 1000;
+    }
+
+    .container-custom {
+      max-width: 800px;
+      margin: 0 auto;
+      background: #ffffff;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      padding: 2rem;
+      margin-top: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .form-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--dark);
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 2px solid #e5e7eb;
+    }
+
+    .form-section {
+      margin-bottom: 2rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .form-section-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--dark);
+      margin-bottom: 1rem;
+    }
+
+    .form-label {
+      font-weight: 500;
+      color: #475569;
+      margin-bottom: 0.5rem;
+    }
+
+    .form-control, .form-select {
+      padding: 0.75rem 1rem;
+      border: 1px solid #cbd5e1;
+      border-radius: var(--border-radius);
+      font-size: 0.95rem;
+      transition: all 0.2s;
+    }
+
+    .form-control:focus, .form-select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+
+    .form-check-input {
+      width: 1.1rem;
+      height: 1.1rem;
+      margin-top: 0.25rem;
+      border: 1.5px solid #94a3b8;
+    }
+
+    .form-check-input:checked {
+      background-color: var(--primary);
+      border-color: var(--primary);
+    }
+
+    .form-check-label {
+      font-weight: 500;
+      padding-left: 0.25rem;
+    }
+
+    .room-type-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-top: 0.5rem;
+    }
+
+    .room-type-card {
+      border: 1px solid #e2e8f0;
+      border-radius: var(--border-radius);
+      padding: 1.25rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .room-type-card:hover {
+      border-color: #cbd5e1;
+      background-color: #f8fafc;
+    }
+
+    .room-type-card.selected {
+      border-color: var(--primary);
+      background-color: var(--primary-light);
+    }
+
+    .room-type-card .icon {
+      font-size: 2rem;
+      color: var(--secondary);
+      margin-bottom: 0.75rem;
+    }
+
+    .room-type-card.selected .icon {
+      color: var(--primary);
+    }
+
+    .room-type-card .title {
+      font-weight: 600;
+      font-size: 1rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .room-type-card .description {
+      font-size: 0.85rem;
+      color: var(--secondary);
+    }
+
+    .washroom-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 1rem;
+      margin-top: 0.5rem;
+    }
+
+    .washroom-option {
+      position: relative;
+    }
+
+    .washroom-option input[type="radio"] {
+      position: absolute;
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .washroom-option label {
+      display: block;
+      padding: 1rem;
+      border: 1px solid #e2e8f0;
+      border-radius: var(--border-radius);
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .washroom-option input[type="radio"]:checked + label {
+      border-color: var(--primary);
+      background-color: var(--primary-light);
+    }
+
+    .washroom-option .icon {
+      font-size: 1.5rem;
+      color: var(--secondary);
+      margin-bottom: 0.5rem;
+    }
+
+    .washroom-option input[type="radio"]:checked + label .icon {
+      color: var(--primary);
+    }
+
+    .washroom-option .title {
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .upload-area {
+      border: 2px dashed #cbd5e1;
+      border-radius: var(--border-radius);
+      padding: 2.5rem 1.5rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      background-color: #f8fafc;
+      margin-top: 1rem;
+    }
+
+    .upload-area:hover, .upload-area.drag-over {
+      border-color: var(--primary);
+      background-color: var(--primary-light);
+    }
+
+    .upload-icon {
+      font-size: 2.5rem;
+      color: var(--secondary);
+      margin-bottom: 1rem;
+    }
+
+    .upload-area:hover .upload-icon {
+      color: var(--primary);
+    }
+
+    .upload-title {
+      font-weight: 600;
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .upload-text {
+      color: var(--secondary);
+      margin-bottom: 1rem;
+    }
+
+    .btn-browse {
+      background-color: white;
+      color: var(--primary);
+      border: 1px solid var(--primary);
+      border-radius: 9999px;
+      padding: 0.5rem 1.5rem;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+
+    .btn-browse:hover {
+      background-color: var(--primary-light);
+    }
+
+    .media-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    .media-item {
+      position: relative;
+      aspect-ratio: 1;
+      border-radius: var(--border-radius);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.2s;
+    }
+
+    .media-item:hover {
+      transform: scale(1.03);
+      box-shadow: var(--shadow);
+    }
+
+    .media-item img, .media-item video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      cursor: pointer;
+    }
+
+    .media-actions {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      z-index: 2;
+    }
+
+    .btn-media-action {
+      background: rgba(0, 0, 0, 0.6);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-media-action:hover {
+      background: rgba(0, 0, 0, 0.8);
+    }
+
+    .dropdown-menu {
+      min-width: 120px;
+      border: none;
+      border-radius: 0.5rem;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      padding: 0.5rem 0;
+    }
+
+    .dropdown-item {
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+    }
+
+    .main-badge {
+      position: absolute;
+      bottom: 0.5rem;
+      left: 0.5rem;
+      background-color: var(--success);
+      color: white;
+      padding: 0.25rem 0.5rem;
+      font-size: 0.75rem;
+      border-radius: 0.25rem;
+      font-weight: 500;
+      z-index: 2;
+    }
+
+    .progress-bar-container {
+      position: fixed;
+      bottom: 70px;
+      left: 0; right: 0;
+      height: 10px;
+      background: #fff;
+      box-shadow: inset 0 0 6px #000;
+      border: 1px solid #000;
+      border-radius: 10px;
+      overflow: hidden;
+      max-width: 100vw;
+      z-index: 1100;
+    }
+
+    .progress-water-fill {
+      height: 100%;
+      width: 45%;
+      background: linear-gradient(270deg, #000, #000000, #000);
+      background-size: 600% 600%;
+      animation: waveAnimation 8s linear infinite;
+      border-radius: 10px 0 0 10px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .progress-water-fill::before {
+      content: '';
+      position: absolute;
+      top: -15px;
+      left: 0;
+      width: 200%;
+      height: 30px;
+      background: rgba(0, 0, 0, 0.6);
+      border-radius: 40%;
+      animation: waveMotion 4s linear infinite;
+      filter: blur(1.5px);
+      opacity: 0.7;
+    }
+
+    @keyframes waveAnimation {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 100% 50%; }
+    }
+
+    @keyframes waveMotion {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+   
+
+    .btn-footer {
+      padding: 0.75rem 1.75rem;
+      font-size: 1rem;
+      border-radius: 9999px;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .btn-back {
+      background-color: #f1f5f9;
+      color: var(--secondary);
+      border: none;
+    }
+
+    .btn-back:hover {
+      background-color: #e2e8f0;
+      color: var(--dark);
+    }
+
+    .btn-next {
+      background-color: var(--primary);
+      color: white;
+      border: none;
+    }
+
+    .btn-next:hover {
+      background-color: var(--primary-hover);
+    }
+
+    .modal-content {
+      border-radius: 1rem;
+      overflow: hidden;
+      border: none;
+    }
+
+    .modal-body {
+      padding: 0;
+      background-color: #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-body img, .modal-body video {
+      max-width: 100%;
+      max-height: 80vh;
+    }
+
+    .modal-footer {
+      background-color: #000;
+      border-top: none;
+      padding: 1rem;
+    }
+
+    .btn-modal {
+      background-color: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: none;
+      border-radius: 9999px;
+      padding: 0.5rem 1.25rem;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+
+    .btn-modal:hover {
+      background-color: rgba(255, 255, 255, 0.3);
+    }
+
+    @media (max-width: 768px) {
+      .container-custom {
+        padding: 1.5rem;
+      }
+
+      .room-type-cards, .washroom-options {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .media-grid {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      }
+    }
+
+    @media (max-width: 576px) {
+      header {
+        padding: 0 1rem;
+      }
+
+      .container-custom {
+        padding: 1rem;
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+      }
+
+      .form-title {
+        font-size: 1.25rem;
+      }
+
+      .room-type-cards, .washroom-options {
+        grid-template-columns: 1fr;
+      }
+
+      footer {
+        padding: 0 1rem;
+      }
+
+      .btn-footer {
+        padding: 0.6rem 1.25rem;
+        font-size: 0.95rem;
+      }
+    }
+    
+    .btn-next,
+    .btn-back {
+      padding: 0.6rem 1.8rem;
+      font-size: 1.1rem;
+      border: none;
+      border-radius: 9999px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      min-width: 100px;
+      font-weight: 600;
+    }
+
+    .btn-next {
+      background-color: #000;
+      color: #fff;
+    }
+
+    .btn-next:hover {
+      background-color: #333;
+    }
+
+    .btn-back {
+      background-color: #e0e0e0;
+      color: #000;
+    }
+
+    .btn-back:hover {
+      background-color: #ccc;
+    }
+
+  </style>
+</head>
+<body>
+  <header>CozyHomeStays</header>
+  <div class="container container-custom">
+    <h2 class="form-title">Room Details</h2>
+    <form id="roomDetailsForm" action="/host/property/<%= propertyId %>/roomdetails" method="POST" enctype="multipart/form-data">
+      <div class="form-section">
+        <h3 class="form-section-title">Basic Information</h3>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label for="totalRooms" class="form-label">Total Rooms</label>
+            <input type="number" class="form-control" id="totalRooms" name="totalRooms" required min="1" placeholder="Enter number of rooms" value="<%= room?.totalRooms || '' %>">
+          </div>
+          <div class="col-md-6">
+            <label for="maxAttendant" class="form-label">Maximum Attendees</label>
+            <input type="number" class="form-control" id="maxAttendant" name="maxAttendant" required min="1" placeholder="Enter maximum capacity" value="<%= room?.maxAttendant || '' %>">
+          </div>
+        </div>
+      </div>
+      <div class="form-section">
+        <h3 class="form-section-title">Room Types</h3>
+        <p class="text-secondary mb-3">Select the types of rooms available in your property</p>
+        <div class="room-type-cards">
+          <div class="room-type-card <%= room?.roomTypes?.single ? 'selected' : '' %>" data-type="single">
+            <div class="icon"><i class="bi bi-person"></i></div>
+            <div class="title">Single Bedroom</div>
+            <div class="description">Suitable for one person</div>
+            <input type="checkbox" id="singleRoom" name="roomType" value="Single" class="d-none" <%= room?.roomTypes?.single ? 'checked' : '' %>>
+          </div>
+          <div class="room-type-card <%= room?.roomTypes?.double ? 'selected' : '' %>" data-type="double">
+            <div class="icon"><i class="bi bi-people"></i></div>
+            <div class="title">Double Bedroom</div>
+            <div class="description">Suitable for two people</div>
+            <input type="checkbox" id="doubleRoom" name="roomType" value="Double" class="d-none" <%= room?.roomTypes?.double ? 'checked' : '' %>>
+          </div>
+        </div>
+        <div class="row g-3 mt-3">
+          <div class="col-md-6" id="singleRoomContainer" style="<%= room?.roomTypes?.single ? '' : 'display: none;' %>">
+            <label for="totalSingleRooms" class="form-label">Total Single Bedrooms</label>
+            <input type="number" class="form-control" id="totalSingleRooms" name="totalSingleRooms" min="0" placeholder="Number of single rooms" value="<%= room?.totalSingleRooms || '' %>">
+          </div>
+          <div class="col-md-6" id="doubleRoomContainer" style="<%= room?.roomTypes?.double ? '' : 'display: none;' %>">
+            <label for="totalDoubleRooms" class="form-label">Total Double Bedrooms</label>
+            <input type="number" class="form-control" id="totalDoubleRooms" name="totalDoubleRooms" min="0" placeholder="Number of double rooms" value="<%= room?.totalDoubleRooms || '' %>">
+          </div>
+        </div>
+      </div>
+      <div class="form-section">
+        <h3 class="form-section-title">Washroom Details</h3>
+        <div class="mb-4">
+          <label class="form-label d-block">Washroom Style</label>
+          <div class="washroom-options">
+            <div class="washroom-option">
+              <input type="radio" name="washroomStyle" id="styleIndian" value="Indian" required <%= room?.washroomStyle === 'Indian' ? 'checked' : '' %>>
+              <label for="styleIndian">
+                <div class="icon"><i class="bi bi-water"></i></div>
+                <div class="title">Indian</div>
+              </label>
+            </div>
+            <div class="washroom-option">
+              <input type="radio" name="washroomStyle" id="styleWestern" value="Western" <%= room?.washroomStyle === 'Western' ? 'checked' : '' %>>
+              <label for="styleWestern">
+                <div class="icon"><i class="bi bi-droplet"></i></div>
+                <div class="title">Western</div>
+              </label>
+            </div>
+            <div class="washroom-option">
+              <input type="radio" name="washroomStyle" id="styleBoth" value="Both" <%= room?.washroomStyle === 'Both' ? 'checked' : '' %>>
+              <label for="styleBoth">
+                <div class="icon"><i class="bi bi-droplet-half"></i></div>
+                <div class="title">Both</div>
+              </label>
+            </div>
+          </div>
+        </div>
+        <div>
+          <label class="form-label d-block">Washroom Type</label>
+          <div class="washroom-options">
+            <div class="washroom-option">
+              <input type="radio" name="washroomType" id="typeAttached" value="Attached" required <%= room?.washroomType === 'Attached' ? 'checked' : '' %>>
+              <label for="typeAttached">
+                <div class="icon"><i class="bi bi-door-closed"></i></div>
+                <div class="title">Attached</div>
+              </label>
+            </div>
+            <div class="washroom-option">
+              <input type="radio" name="washroomType" id="typeCommon" value="Common" <%= room?.washroomType === 'Common' ? 'checked' : '' %>>
+              <label for="typeCommon">
+                <div class="icon"><i class="bi bi-people"></i></div>
+                <div class="title">Common</div>
+              </label>
+            </div>
+            <div class="washroom-option">
+              <input type="radio" name="washroomType" id="typeBoth" value="Both" <%= room?.washroomType === 'Both' ? 'checked' : '' %>>
+              <label for="typeBoth">
+                <div class="icon"><i class="bi bi-layout-split"></i></div>
+                <div class="title">Both</div>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Extra Bed Section -->
+      <div class="form-section">
+        <h3 class="form-section-title">Extra Bed & Guest Charges</h3>
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label class="form-label">Allow Extra Bed?</label>
+            <select class="form-select" name="addextrabed" id="addextrabed" onchange="toggleExtraBedFields()">
+              <option value="false" <%= !room?.addextrabed ? 'selected' : '' %>>No</option>
+              <option value="true" <%= room?.addextrabed ? 'selected' : '' %>>Yes</option>
+            </select>
+          </div>
+          <div class="col-md-4" id="extraBedChargeContainer" style="<%= room?.addextrabed ? '' : 'display:none;' %>">
+            <label class="form-label">Extra Bed Charge</label>
+            <input type="number" class="form-control mb-2" name="addextrabed_charge" min="0" placeholder="Extra Bed Charge" value="<%= room?.addextrabed_charge || '' %>">
+          </div>
+          <div class="col-md-4" id="extraGuestChargeContainer" style=" <%= room?.addextrabed ? '' : 'display:none;' %>">
+            <label class="form-label">Extra Guest Charge</label>
+            <input type="number" class="form-control" name="extraguistcharge" min="0" placeholder="Extra Guest Charge" value="<%= room?.extraguistcharge || '' %>">
+          </div>
+        </div>
+      </div>
+      <!-- End Extra Bed Section -->
+
+      <div class="form-section">
+        <h3 class="form-section-title">Room Photos</h3>
+        <p class="text-secondary mb-3">Upload photos of your rooms to showcase your property</p>
+        <div id="dropArea" class="upload-area">
+          <div class="upload-icon"><i class="bi bi-cloud-arrow-up"></i></div>
+          <h4 class="upload-title">Drag & Drop Files</h4>
+          <p class="upload-text">or click the button below to browse files</p>
+          <button type="button" class="btn btn-browse" onclick="document.getElementById('mediaInput').click()">Browse Files</button>
+          <p class="text-secondary mt-3 small">Supported formats: JPG, PNG, MP4</p>
+          <input type="file" id="mediaInput" name="mediaInput" multiple accept="image/*,video/*" style="display: none;">
+        </div>
+        <input type="hidden" id="mainImage" name="mainImage">
+        <div id="mediaPreview" class="media-grid">
+          <% if (room && room.mediaInput && room.mediaInput.length) { %>
+            <% room.mediaInput.forEach(function(file, idx) { %>
+              <div class="media-item" data-index="<%= idx %>">
+                <% if (file.mimetype && file.mimetype.startsWith('image/')) { %>
+                  <img src="/<%= file.path %>" alt="Room photo" data-filename="<%= file.filename %>">
+                <% } else if (file.mimetype && file.mimetype.startsWith('video/')) { %>
+                  <video src="/<%= file.path %>" muted data-filename="<%= file.filename %>"></video>
+                <% } %>
+                <% if (file.isMain) { %>
+                  <span class="main-badge">Main</span>
+                <% } %>
+              </div>
+            <% }); %>
+          <% } %>
+        </div>
+      </div>
+      <div class="progress-bar-container" role="progressbar" aria-valuenow="15" aria-valuemin="0" aria-valuemax="100">
+        <div class="progress-water-fill"></div>
+      </div>
+      <footer>
+        <a href="/host/<%= propertyId %>/listtype" class="btn-back">Back</a>
+        <button type="submit" class="btn-next">Next</button>
+      </footer>
+    </form>
+  </div>
+  <!-- Modal for image/video preview -->
+  <div class="modal fade" id="mediaModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+      <div class="modal-content">
+        <div class="modal-body" id="modalContent"></div>
+        <div class="modal-footer">
+          <button type="button" class="btn-modal" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Room type selection (same as before)
+    const roomTypeCards = document.querySelectorAll('.room-type-card');
+    roomTypeCards.forEach(card => {
+      card.addEventListener('click', () => {
+        const type = card.dataset.type;
+        const checkbox = card.querySelector('input[type="checkbox"]');
+        card.classList.toggle('selected');
+        checkbox.checked = card.classList.contains('selected');
+        if (type === 'single') {
+          document.getElementById('singleRoomContainer').style.display = checkbox.checked ? 'block' : 'none';
+        } else if (type === 'double') {
+          document.getElementById('doubleRoomContainer').style.display = checkbox.checked ? 'block' : 'none';
+        }
+      });
+    });
+
+    // Extra bed select show/hide
+    function toggleExtraBedFields() {
+      const select = document.getElementById('addextrabed');
+      const charge = document.getElementById('extraBedChargeContainer');
+      const guest = document.getElementById('extraGuestChargeContainer');
+      if (select.value === "true") {
+        charge.style.display = "";
+        guest.style.display = "";
+      } else {
+        charge.style.display = "none";
+        guest.style.display = "none";
+        // Optionally clear fields
+        charge.querySelector('input').value = "";
+        guest.querySelector('input').value = "";
+      }
+    }
+
+    // File upload handling
+    const dropArea = document.getElementById('dropArea');
+    const mediaInput = document.getElementById('mediaInput');
+    const mediaPreview = document.getElementById('mediaPreview');
+    const mainImageInput = document.getElementById('mainImage');
+    const modal = new bootstrap.Modal(document.getElementById('mediaModal'));
+    const modalContent = document.getElementById('modalContent');
+
+    // Store files in memory for index mapping
+    let selectedFiles = [];
+
+    function updateMainImageIndices() {
+      Array.from(mediaPreview.children).forEach((itemDiv, idx) => {
+        itemDiv.setAttribute('data-index', idx);
+        // If badge present, update mainImageInput
+        if (itemDiv.querySelector('.main-badge')) {
+          mainImageInput.value = idx;
+        }
+      });
+    }
+
+    function handleFiles(files) {
+      Array.from(files).forEach(file => {
+        selectedFiles.push(file);
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const itemDiv = document.createElement('div');
+          itemDiv.className = 'media-item';
+          const isImage = file.type.startsWith('image/');
+          const mediaHTML = isImage
+            ? `<img src="${e.target.result}" alt="Room photo" data-filename="${file.name}" />`
+            : `<video src="${e.target.result}" muted data-filename="${file.name}"></video>`;
+          itemDiv.innerHTML = `
+            <div class="media-actions dropdown">
+              <button class="btn-media-action" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="bi bi-three-dots"></i>
+              </button>
+              <ul class="dropdown-menu">
+                <li><button class="dropdown-item set-main" type="button">Set as Main</button></li>
+                <li><button class="dropdown-item remove-media" type="button">Remove</button></li>
+              </ul>
+            </div>
+            ${mediaHTML}
+          `;
+          itemDiv.addEventListener('click', (e) => {
+            if (!e.target.closest('.media-actions')) {
+              const src = itemDiv.querySelector('[data-filename]')?.src;
+              modalContent.innerHTML = isImage
+                ? `<img src="${src}" class="img-fluid" alt="Room photo preview">`
+                : `<video src="${src}" class="w-100" controls autoplay></video>`;
+              modal.show();
+            }
+          });
+          itemDiv.querySelector('.set-main').addEventListener('click', () => {
+            document.querySelectorAll('.main-badge').forEach(b => b.remove());
+            itemDiv.insertAdjacentHTML('beforeend', `<span class="main-badge">Main</span>`);
+            updateMainImageIndices();
+          });
+          itemDiv.querySelector('.remove-media').addEventListener('click', () => {
+            itemDiv.remove();
+            selectedFiles = selectedFiles.filter(f => f.name !== file.name);
+            updateMainImageIndices();
+          });
+          mediaPreview.appendChild(itemDiv);
+          if (mediaPreview.children.length === 1) {
+            itemDiv.insertAdjacentHTML('beforeend', `<span class="main-badge">Main</span>`);
+            updateMainImageIndices();
+          }
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    dropArea.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropArea.classList.add('drag-over');
+    });
+    dropArea.addEventListener('dragleave', () => {
+      dropArea.classList.remove('drag-over');
+    });
+    dropArea.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropArea.classList.remove('drag-over');
+      handleFiles(e.dataTransfer.files);
+    });
+    mediaInput.addEventListener('change', (e) => {
+      handleFiles(e.target.files);
+    });
+
+    // Show/hide extra bed on load if value set
+    window.onload = function() {
+      toggleExtraBedFields();
+    };
+  </script>
+</body>
+</html>

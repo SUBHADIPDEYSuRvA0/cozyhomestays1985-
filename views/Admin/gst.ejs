@@ -1,0 +1,113 @@
+<%- include('layout/header') %>
+
+<main class="main-content" >
+  <%- include('layout/navbar') %>
+  <div class="dashboard-content">
+  <div style=" margin: 0 auto;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+      <h2 style="margin: 0; font-weight: 600; color: #333;">GST Entries</h2>
+      <button onclick="openCreateModal()" 
+              style="background-color: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer;">
+        ➕ Add GST
+      </button>
+    </div>
+
+    <div style="background: white; padding: 20px; border-radius: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.1);">
+      <table style="width: 100%; border-collapse: collapse; font-size: 16px;">
+        <thead>
+          <tr style="background-color: #333; color: white;">
+            <th style="padding: 12px; text-align: left;">Title</th>
+            <th style="padding: 12px; text-align: left;">Value</th>
+            <th style="padding: 12px; text-align: left;">GST Rate</th>
+            <th style="padding: 12px; text-align: left;">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (allGsts.length === 0) { %>
+            <tr>
+              <td colspan="4" style="text-align: center; padding: 15px; background: #fafafa;">No records found.</td>
+            </tr>
+          <% } else { %>
+            <% allGsts.forEach(gst => { %>
+              <tr style="border-bottom: 1px solid #ddd;" onmouseover="this.style.backgroundColor='#f9f9f9'" onmouseout="this.style.backgroundColor='white'">
+                <td style="padding: 10px;"><%= gst.title %></td>
+                <td style="padding: 10px;">₹ <%= gst.value %></td>
+                <td style="padding: 10px;"><%= gst.gstrate %> %</td>
+                <td style="padding: 10px;">
+                  <button onclick='openEditModal(<%- JSON.stringify(gst) %>)' 
+                          style="background-color: #ffc107; color: black; padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer;">
+                    ✏️ Edit
+                  </button>
+                </td>
+              </tr>
+            <% }) %>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="gstModal" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.5); z-index: 999; justify-content: center; align-items: center;">
+    <form id="gstForm" method="POST" 
+          style="background: white; border-radius: 10px; padding: 2rem; width: 400px; display: flex; flex-direction: column; gap: 15px;">
+      
+      <h3 id="gstModalLabel" style="margin: 0; color: #333;">Add GST</h3>
+      <input type="hidden" name="_id" id="gstId">
+
+      <input type="text" id="title" name="title" placeholder="Title" required 
+             style="padding: 10px; border: 1px solid #ccc; border-radius: 6px;">
+      
+      <input type="text" id="value" name="value" placeholder="Value" required 
+             style="padding: 10px; border: 1px solid #ccc; border-radius: 6px;">
+      
+      <input type="text" id="gstrate" name="gstrate" placeholder="GST Rate" required 
+             style="padding: 10px; border: 1px solid #ccc; border-radius: 6px;">
+      
+      <div style="display: flex; justify-content: flex-end; gap: 10px;">
+        <button type="button" onclick="closeModal()" 
+                style="background: #6c757d; color: white; border: none; padding: 8px 14px; border-radius: 6px;">Close</button>
+        <button type="submit" 
+                style="background: #007bff; color: white; border: none; padding: 8px 14px; border-radius: 6px;">💾 Save</button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    function openCreateModal() {
+      document.getElementById("gstModalLabel").innerText = "Add GST";
+      document.getElementById("gstForm").action = "/admin/gst/create";
+      document.getElementById("title").value = "";
+      document.getElementById("value").value = "";
+      document.getElementById("gstrate").value = "";
+      document.getElementById("gstId").value = "";
+      document.getElementById("gstModal").style.display = "flex";
+    }
+
+    function openEditModal(gst) {
+      document.getElementById("gstModalLabel").innerText = "Update GST";
+      document.getElementById("gstForm").action = "/admin/gst/update/" + gst._id;
+      document.getElementById("title").value = gst.title;
+      document.getElementById("value").value = gst.value;
+      document.getElementById("gstrate").value = gst.gstrate;
+      document.getElementById("gstId").value = gst._id;
+      document.getElementById("gstModal").style.display = "flex";
+    }
+
+    function closeModal() {
+      document.getElementById("gstModal").style.display = "none";
+    }
+
+    // Close modal on ESC or background click
+    window.addEventListener('click', function(e) {
+      const modal = document.getElementById('gstModal');
+      if (e.target === modal) closeModal();
+    });
+    window.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeModal();
+    });
+  </script>
+  </div>
+</main>
+
+<%- include('layout/footer') %>

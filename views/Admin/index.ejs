@@ -1,0 +1,261 @@
+  <%- include('layout/header') %>
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Navbar -->
+            <%- include('layout/navbar') %>
+            
+            <!-- Dashboard Content -->
+            <div class="dashboard-content">
+                <div class="page-header">
+                    <h1>Dashboard Overview</h1>
+                    <div class="date-picker">
+                        <i class="fas fa-calendar"></i>
+                        <span>May 13, 2025</span>
+                    </div>
+                </div>
+                
+                <!-- Stats Cards -->
+                <div class="stats-container">
+                    <div class="stat-card">
+                        <div class="stat-card-content">
+                            <div class="stat-card-info">
+                                <h3>Total Properties</h3>
+                                <h2>42</h2>
+                                <p><span class="positive">+12%</span> from last month</p>
+                            </div>
+                            <div class="stat-card-icon blue">
+                                <i class="fas fa-building"></i>
+                            </div>
+                        </div>
+                        <div class="stat-card-chart">
+                            <canvas id="propertiesChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-card-content">
+                            <div class="stat-card-info">
+                                <h3>Total Bookings</h3>
+                                <h2>156</h2>
+                                <p><span class="positive">+8%</span> from last month</p>
+                            </div>
+                            <div class="stat-card-icon green">
+                                <i class="fas fa-calendar-check"></i>
+                            </div>
+                        </div>
+                        <div class="stat-card-chart">
+                            <canvas id="bookingsChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-card-content">
+                            <div class="stat-card-info">
+                                <h3>Revenue</h3>
+                                <h2>$24,500</h2>
+                                <p><span class="positive">+15%</span> from last month</p>
+                            </div>
+                            <div class="stat-card-icon purple">
+                                <i class="fas fa-dollar-sign"></i>
+                            </div>
+                        </div>
+                        <div class="stat-card-chart">
+                            <canvas id="revenueChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-card-content">
+                            <div class="stat-card-info">
+                                <h3>Customers</h3>
+                                <h2>312</h2>
+                                <p><span class="positive">+5%</span> from last month</p>
+                            </div>
+                            <div class="stat-card-icon orange">
+                                <i class="fas fa-users"></i>
+                            </div>
+                        </div>
+                        <div class="stat-card-chart">
+                            <canvas id="customersChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Charts Section -->
+                <div class="charts-container">
+                    <div class="chart-card large">
+                        <div class="chart-header">
+                            <h3>Revenue Overview</h3>
+                            <div class="chart-actions">
+                                <button class="active">Weekly</button>
+                                <button>Monthly</button>
+                                <button>Yearly</button>
+                            </div>
+                        </div>
+                        <div class="chart-body">
+                            <canvas id="revenueOverviewChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3>Property Types</h3>
+                            <div class="chart-actions">
+                                <button><i class="fas fa-ellipsis-v"></i></button>
+                            </div>
+                        </div>
+                        <div class="chart-body">
+                            <canvas id="propertyTypesChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3>Booking Status</h3>
+                            <div class="chart-actions">
+                                <button><i class="fas fa-ellipsis-v"></i></button>
+                            </div>
+                        </div>
+                        <div class="chart-body">
+                            <canvas id="bookingStatusChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Recent Bookings Table -->
+                <div class="table-card">
+                    <div class="table-header">
+                        <h3>Recent Bookings</h3>
+                        <button class="view-all">View All <i class="fas fa-arrow-right"></i></button>
+                    </div>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Customer</th>
+                                    <th>Property</th>
+                                    <th>Check In</th>
+                                    <th>Check Out</th>
+                                    <th>Status</th>
+                                    <th>Amount</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="customer-info">
+                                            <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Customer">
+                                            <div>
+                                                <h4>Emma Wilson</h4>
+                                                <p>emma@example.com</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>Sunset Villa</td>
+                                    <td>May 15, 2025</td>
+                                    <td>May 20, 2025</td>
+                                    <td><span class="status confirmed">Confirmed</span></td>
+                                    <td>$1,250</td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn"><i class="fas fa-eye"></i></button>
+                                            <button class="action-btn"><i class="fas fa-edit"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="customer-info">
+                                            <img src="https://randomuser.me/api/portraits/men/67.jpg" alt="Customer">
+                                            <div>
+                                                <h4>Michael Brown</h4>
+                                                <p>michael@example.com</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>Mountain Cottage</td>
+                                    <td>May 18, 2025</td>
+                                    <td>May 25, 2025</td>
+                                    <td><span class="status pending">Pending</span></td>
+                                    <td>$980</td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn"><i class="fas fa-eye"></i></button>
+                                            <button class="action-btn"><i class="fas fa-edit"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="customer-info">
+                                            <img src="https://randomuser.me/api/portraits/women/33.jpg" alt="Customer">
+                                            <div>
+                                                <h4>Sophia Garcia</h4>
+                                                <p>sophia@example.com</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>Lakeside Cabin</td>
+                                    <td>May 20, 2025</td>
+                                    <td>May 27, 2025</td>
+                                    <td><span class="status confirmed">Confirmed</span></td>
+                                    <td>$1,450</td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn"><i class="fas fa-eye"></i></button>
+                                            <button class="action-btn"><i class="fas fa-edit"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="customer-info">
+                                            <img src="https://randomuser.me/api/portraits/men/42.jpg" alt="Customer">
+                                            <div>
+                                                <h4>James Johnson</h4>
+                                                <p>james@example.com</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>Beach House</td>
+                                    <td>May 22, 2025</td>
+                                    <td>May 29, 2025</td>
+                                    <td><span class="status cancelled">Cancelled</span></td>
+                                    <td>$1,800</td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn"><i class="fas fa-eye"></i></button>
+                                            <button class="action-btn"><i class="fas fa-edit"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="customer-info">
+                                            <img src="https://randomuser.me/api/portraits/women/26.jpg" alt="Customer">
+                                            <div>
+                                                <h4>Olivia Martinez</h4>
+                                                <p>olivia@example.com</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>Forest Retreat</td>
+                                    <td>May 25, 2025</td>
+                                    <td>May 30, 2025</td>
+                                    <td><span class="status confirmed">Confirmed</span></td>
+                                    <td>$1,100</td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn"><i class="fas fa-eye"></i></button>
+                                            <button class="action-btn"><i class="fas fa-edit"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+   <%- include('layout/footer') %>

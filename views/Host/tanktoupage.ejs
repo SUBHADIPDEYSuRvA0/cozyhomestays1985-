@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Set Room Prices</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .occasion-block { background: #f9f9f9; border-radius: 6px; margin-bottom: 8px; padding: 12px; }
+    .calc-table td, .calc-table th { font-size: 0.96em; }
+    .mini-room-list {font-size:0.88em;}
+    .mini-room-list b {font-weight:600;}
+    .calendar-scroll { overflow-x: auto; }
+    .calendar-cell { min-width:110px; cursor:pointer; border-width: 2px; }
+    .calendar-base { background-color: #0080ff; color:#fff; }
+    .calendar-daywise { background-color: #ff0000; color:#fff; }
+    .calendar-occasion { background-color: #ffe600; color:#000; border-color: #927c00; }
+    .calendar-discount { background-color: #00ff00; color:#000; border-color: #50c878; }
+  </style>
+</head>
+<body>
+<div class="container my-4">
+  <h2>Set Prices for Rooms</h2>
+  <% if (message) { %>
+    <div class="alert alert-success"><%= message %></div>
+  <% } %>
+  <button type="button" class="btn btn-info mb-3" data-bs-toggle="modal" data-bs-target="#calendarModal">
+    Open 10-Year Calendar
+  </button>
+  <form method="POST" action="/host/property/<%= propertyId %>/roomprice">
+    <input type="hidden" name="propertyId" value="<%= propertyId %>">
+    <% const dayOrder = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday']; %>
+    <% rooms.forEach((room, idx) => { 
+      const price = priceMap[room._id.toString()] || {};
+      const disc = price.discount || {};
+      const dayWisePrices = price.dayWisePrices || {};
+    %>
+      <div class="card my-3">
+        <div class="card-header">
+          <h5 class="mb-1"><%= room.name %> (<%= room.roomType %>)</h5>
+          <div class="small text-muted">
+            Washroom Type: <%= room.washroomType %> &nbsp;|&nbsp;
+            Washroom Style: <%= room.washroomStyle %> &nbsp;|&nbsp;
+            Max Attendant: <%= room.maxAttendant %> &nbsp;|&nbsp;
+            Status: <%= room.status %>
+          </div>
+        </div>
+        <div class="card-body">
+          <input type="hidden" name="roomId[]" value="<%= room._id %>">
+          <div class="mb-2">
+            <label>Base Price:</label>
+            <input type="number" class="form-control base-price-input" data-idx="<%= idx %>" name="basePrice[]" value="<%= price.basePrice || '' %>" required>
+            <label class="mt-2 mb-1">Day-wise Price (optional, overrides base on given day):</label>
+            <div class="row">
+            <% dayOrder.forEach(function(day) { %>
+              <div class="col-md-3 mb-1">
+                <label style="font-size:0.9em"><%= day.charAt(0).toUpperCase() + day.slice(1) %>:</label>
+                <input type="number" class="form-control daywise-price-input" data-idx="<%= idx %>" data-day="<%= day %>" name="dayWisePrices[<%= idx %>][<%= day %>]" value="<%= (dayWisePrices && dayWisePrices[day]) ? dayWisePrices[day] : '' %>" placeholder="e.g. 1200">
+              </div>
+            <% }) %>
+            </div>
+            <table class="table table-bordered table-sm mt-2 calc-table" id="baseCalcTable-<%= idx %>">
+              <thead class="table-light">
+                <tr>
+                  <th>Day</th>
+                  <th>Price</th>
+                  <th>Platform Charge (<%= servicerate %>%)</th>
+                  <th>You Receive</th>
+                  <th>Discounted Price</th>
+                  <th>Platform Charge (Disc.)</th>
+                  <th>You Receive (Disc.)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr data-day="base">
+                  <td><b>Base</b></td>
+                  <td class="basePriceCell"></td>
+                  <td class="platformFeeCell"></td>
+                  <td class="hostGetsCell"></td>
+                  <td class="discPriceCell"></td>
+                  <td class="discPlatFeeCell"></td>
+                  <td class="discHostGetsCell"></td>
+                </tr>
+                <% dayOrder.forEach(function(day) { %>
+                <tr data-day="<%= day %>">
+                  <td><%= day.charAt(0).toUpperCase() + day.slice(1) %></td>
+                  <td class="dwPriceCell"></td>
+                  <td class="dwPlatformFeeCell"></td>
+                  <td class="dwHostGetsCell"></td>
+                  <td class="dwDiscPriceCell"></td>
+                  <td class="dwDiscPlatFeeCell"></td>
+                  <td class="dwDiscHostGetsCell"></td>
+                </tr>
+                <% }) %>
+              </tbody>
+            </table>
+          </div>
+          <div>
+            <label>Occasion Prices:</label>
+            <div id="occasionContainer-<%= idx %>">
+              <% if (price.occasionPrices && price.occasionPrices.length) {
+                price.occasionPrices.forEach(function(occ, j) { %>
+                  <div class="row occasion-block mb-2">
+                    <div class="col-md-3">
+                      <input type="text" class="form-control" name="occasionName[<%= idx %>][]" placeholder="Occasion Name" value="<%= occ.name %>">
+                    </div>
+                    <div class="col-md-3">
+                      <input type="date" class="form-control" name="occasionStart[<%= idx %>][]" value="<%= occ.startDate ? occ.startDate.toISOString().substring(0,10) : '' %>">
+                    </div>
+                    <div class="col-md-3">
+                      <input type="date" class="form-control" name="occasionEnd[<%= idx %>][]" value="<%= occ.endDate ? occ.endDate.toISOString().substring(0,10) : '' %>">
+                    </div>
+                    <div class="col-md-2">
+                      <input type="number" class="form-control occasion-price-input" data-idx="<%= idx %>" name="occasionPrice[<%= idx %>][]" placeholder="Price" value="<%= occ.price %>">
+                    </div>
+                    <div class="col-md-1">
+                      <% if(j > 0) { %>
+                        <button type="button" class="btn btn-danger" onclick="this.closest('.occasion-block').remove();">X</button>
+                      <% } %>
+                    </div>
+                    <div class="col-12">
+                      <table class="table table-bordered table-sm mt-2 calc-table" id="occCalcTable-<%= idx %>-<%= j %>">
+                        <thead class="table-light">
+                          <tr>
+                            <th>Price</th>
+                            <th>Platform Charge (<%= servicerate %>%)</th>
+                            <th>You Receive</th>
+                            <th>Discounted Price</th>
+                            <th>Platform Charge (Disc.)</th>
+                            <th>You Receive (Disc.)</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td class="basePriceCell"></td>
+                            <td class="platformFeeCell"></td>
+                            <td class="hostGetsCell"></td>
+                            <td class="discPriceCell"></td>
+                            <td class="discPlatFeeCell"></td>
+                            <td class="discHostGetsCell"></td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+              <% }) } else { %>
+                <div class="row occasion-block mb-2">
+                  <div class="col-md-3">
+                    <input type="text" class="form-control" name="occasionName[<%= idx %>][]" placeholder="Occasion Name">
+                  </div>
+                  <div class="col-md-3">
+                    <input type="date" class="form-control" name="occasionStart[<%= idx %>][]" >
+                  </div>
+                  <div class="col-md-3">
+                    <input type="date" class="form-control" name="occasionEnd[<%= idx %>][]" >
+                  </div>
+                  <div class="col-md-2">
+                    <input type="number" class="form-control occasion-price-input" data-idx="<%= idx %>" name="occasionPrice[<%= idx %>][]" placeholder="Price">
+                  </div>
+                  <div class="col-md-1"></div>
+                  <div class="col-12">
+                    <table class="table table-bordered table-sm mt-2 calc-table" id="occCalcTable-<%= idx %>-0">
+                      <thead class="table-light">
+                        <tr>
+                          <th>Price</th>
+                          <th>Platform Charge (<%= servicerate %>%)</th>
+                          <th>You Receive</th>
+                          <th>Discounted Price</th>
+                          <th>Platform Charge (Disc.)</th>
+                          <th>You Receive (Disc.)</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td class="basePriceCell"></td>
+                          <td class="platformFeeCell"></td>
+                          <td class="hostGetsCell"></td>
+                          <td class="discPriceCell"></td>
+                          <td class="discPlatFeeCell"></td>
+                          <td class="discHostGetsCell"></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              <% } %>
+            </div>
+            <button type="button" class="btn btn-secondary btn-sm mt-2" onclick="addOccasion(`<%= idx %>`)">+ Add Occasion</button>
+          </div>
+          <div class="mt-3">
+            <label>
+              <input type="checkbox" class="discount-active-input" data-idx="<%= idx %>" name="discountIsActive[]" value="1" <%= disc.isActive ? 'checked' : '' %> >
+              Enable Discount
+            </label>
+            <div class="row g-2 mt-1">
+              <div class="col-md-4">
+                <input type="number" class="form-control discount-limit-input" data-idx="<%= idx %>" name="discountBookingsLimit[]" placeholder="Bookings Limit" value="<%= disc.bookingsLimit ?? 3 %>">
+              </div>
+              <div class="col-md-4">
+                <input type="number" class="form-control discount-perc-input" data-idx="<%= idx %>" name="discountPercentage[]" placeholder="Discount %" value="<%= disc.percentage ?? 0 %>">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% }) %>
+    <button type="submit" class="btn btn-primary">Save All Room Prices</button>
+  </form>
+
+  <!-- Calendar Modal -->
+  <div class="modal fade" id="calendarModal" tabindex="-1" aria-labelledby="calendarModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="calendarModalLabel">Calendar (10 Years)</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body calendar-scroll">
+          <div class="row mb-3">
+            <div class="col-md-3">
+              <select id="calendarYear" class="form-select"></select>
+            </div>
+            <div class="col-md-3">
+              <select id="calendarMonth" class="form-select">
+                <% ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'].forEach((m, i) => { %>
+                  <option value="<%= i %>"><%= m %></option>
+                <% }) %>
+              </select>
+            </div>
+            <div class="col-md-2">
+              <button class="btn btn-primary" type="button" onclick="renderCalendar()">Go</button>
+            </div>
+          </div>
+          <div id="calendarGrid"></div>
+          <div class="mt-3">
+            <b>Legend:</b>
+            <span class="badge calendar-base border">Base Price</span>
+            <span class="badge calendar-daywise border">Daywise Price</span>
+            <span class="badge calendar-occasion border">Occasion Price</span>
+            <span class="badge calendar-discount border">Discounted Price</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Day Details Modal -->
+  <div class="modal fade" id="dayDetailsModal" tabindex="-1" aria-labelledby="dayDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="dayDetailsModalLabel">Prices for <span id="dayDetailsDate"></span></h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" id="dayDetailsBody"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment-with-locales.min.js"></script>
+<script>
+  // --- TABLE UPDATE SCRIPT ---
+  const dayOrder = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
+  const servicerate = `<%= servicerate %>`;
+
+  function updateBaseTable(idx) {
+    // Base row
+    const baseInput = document.querySelector(`input.base-price-input[data-idx="${idx}"]`);
+    const discPercInput = document.querySelector(`input.discount-perc-input[data-idx="${idx}"]`);
+    const discActiveInput = document.querySelector(`input.discount-active-input[data-idx="${idx}"]`);
+    const table = document.getElementById(`baseCalcTable-${idx}`);
+    if (!baseInput || !table) return;
+    const price = Number(baseInput.value) || 0;
+    const discPerc = discActiveInput && discActiveInput.checked ? (Number(discPercInput.value) || 0) : 0;
+    const platformFee = (price * servicerate) / 100;
+    const hostGets = price - platformFee;
+    const discounted = discPerc > 0 ? price * (1 - discPerc / 100) : null;
+    const discPlatformFee = discounted !== null ? (discounted * servicerate) / 100 : null;
+    const discHostGets = discounted !== null ? discounted - discPlatformFee : null;
+    var row = table.querySelector('tr[data-day="base"]');
+    row.querySelector('.basePriceCell').innerText = price ? "₹" + price : "";
+    row.querySelector('.platformFeeCell').innerText = price ? "₹" + platformFee.toFixed(2) : "";
+    row.querySelector('.hostGetsCell').innerText = price ? "₹" + hostGets.toFixed(2) : "";
+    row.querySelector('.discPriceCell').innerText = discounted !== null ? "₹" + discounted.toFixed(2) : "";
+    row.querySelector('.discPlatFeeCell').innerText = discPlatformFee !== null ? "₹" + discPlatformFee.toFixed(2) : "";
+    row.querySelector('.discHostGetsCell').innerText = discHostGets !== null ? "₹" + discHostGets.toFixed(2) : "";
+
+    // Daywise rows
+    dayOrder.forEach(function(day) {
+      const dayInput = document.querySelector(`input.daywise-price-input[data-idx="${idx}"][data-day="${day}"]`);
+      const dprice = Number(dayInput && dayInput.value) || 0;
+      const trow = table.querySelector(`tr[data-day="${day}"]`);
+      if (dprice) {
+        const pfee = (dprice * servicerate) / 100;
+        const hg = dprice - pfee;
+        const disc = discPerc > 0 ? dprice * (1 - discPerc / 100) : null;
+        const discPfee = disc !== null ? (disc * servicerate) / 100 : null;
+        const discHg = disc !== null ? disc - discPfee : null;
+        trow.querySelector('.dwPriceCell').innerText = "₹" + dprice;
+        trow.querySelector('.dwPlatformFeeCell').innerText = "₹" + pfee.toFixed(2);
+        trow.querySelector('.dwHostGetsCell').innerText = "₹" + hg.toFixed(2);
+        trow.querySelector('.dwDiscPriceCell').innerText = disc !== null ? "₹" + disc.toFixed(2) : "";
+        trow.querySelector('.dwDiscPlatFeeCell').innerText = discPfee !== null ? "₹" + discPfee.toFixed(2) : "";
+        trow.querySelector('.dwDiscHostGetsCell').innerText = discHg !== null ? "₹" + discHg.toFixed(2) : "";
+      } else {
+        trow.querySelector('.dwPriceCell').innerText = "";
+        trow.querySelector('.dwPlatformFeeCell').innerText = "";
+        trow.querySelector('.dwHostGetsCell').innerText = "";
+        trow.querySelector('.dwDiscPriceCell').innerText = "";
+        trow.querySelector('.dwDiscPlatFeeCell').innerText = "";
+        trow.querySelector('.dwDiscHostGetsCell').innerText = "";
+      }
+    });
+  }
+
+  function updateOccTables(idx) {
+    const discPercInput = document.querySelector(`input.discount-perc-input[data-idx="${idx}"]`);
+    const discActiveInput = document.querySelector(`input.discount-active-input[data-idx="${idx}"]`);
+    const occasionInputs = document.querySelectorAll(`#occasionContainer-${idx} .occasion-price-input`);
+    occasionInputs.forEach((input, j) => {
+      const table = document.getElementById(`occCalcTable-${idx}-${j}`);
+      if (!table) return;
+      const price = Number(input.value) || 0;
+      const discPerc = discActiveInput && discActiveInput.checked ? (Number(discPercInput.value) || 0) : 0;
+      const platformFee = (price * servicerate) / 100;
+      const hostGets = price - platformFee;
+      const discounted = discPerc > 0 ? price * (1 - discPerc / 100) : null;
+      const discPlatformFee = discounted !== null ? (discounted * servicerate) / 100 : null;
+      const discHostGets = discounted !== null ? discounted - discPlatformFee : null;
+      table.querySelector('.basePriceCell').innerText = price ? "₹" + price : "";
+      table.querySelector('.platformFeeCell').innerText = price ? "₹" + platformFee.toFixed(2) : "";
+      table.querySelector('.hostGetsCell').innerText = price ? "₹" + hostGets.toFixed(2) : "";
+      table.querySelector('.discPriceCell').innerText = discounted !== null ? "₹" + discounted.toFixed(2) : "";
+      table.querySelector('.discPlatFeeCell').innerText = discPlatformFee !== null ? "₹" + discPlatformFee.toFixed(2) : "";
+      table.querySelector('.discHostGetsCell').innerText = discHostGets !== null ? "₹" + discHostGets.toFixed(2) : "";
+    });
+  }
+
+  document.querySelectorAll('.base-price-input').forEach((input) => {
+    input.addEventListener('input', function() {
+      updateBaseTable(this.dataset.idx);
+    });
+    updateBaseTable(input.dataset.idx);
+  });
+  document.querySelectorAll('.daywise-price-input').forEach((input) => {
+    input.addEventListener('input', function() {
+      updateBaseTable(this.dataset.idx);
+    });
+    updateBaseTable(input.dataset.idx);
+  });
+  document.querySelectorAll('.occasion-price-input').forEach((input) => {
+    input.addEventListener('input', function() {
+      updateOccTables(this.dataset.idx);
+    });
+    updateOccTables(input.dataset.idx);
+  });
+  document.querySelectorAll('.discount-perc-input, .discount-active-input').forEach((input) => {
+    input.addEventListener('input', function() {
+      updateBaseTable(this.dataset.idx);
+      updateOccTables(this.dataset.idx);
+    });
+    input.addEventListener('change', function() {
+      updateBaseTable(this.dataset.idx);
+      updateOccTables(this.dataset.idx);
+    });
+  });
+
+  function addOccasion(idx) {
+    const container = document.getElementById('occasionContainer-' + idx);
+    const j = container.querySelectorAll('.occasion-block').length;
+    const div = document.createElement('div');
+    div.className = "row occasion-block mb-2";
+    div.innerHTML = `
+      <div class="col-md-3">
+        <input type="text" class="form-control" name="occasionName[${idx}][]" placeholder="Occasion Name">
+      </div>
+      <div class="col-md-3">
+        <input type="date" class="form-control" name="occasionStart[${idx}][]">
+      </div>
+      <div class="col-md-3">
+        <input type="date" class="form-control" name="occasionEnd[${idx}][]">
+      </div>
+      <div class="col-md-2">
+        <input type="number" class="form-control occasion-price-input" data-idx="${idx}" name="occasionPrice[${idx}][]" placeholder="Price">
+      </div>
+      <div class="col-md-1">
+        <button type="button" class="btn btn-danger" onclick="this.closest('.occasion-block').remove();">X</button>
+      </div>
+      <div class="col-12">
+        <table class="table table-bordered table-sm mt-2 calc-table" id="occCalcTable-${idx}-${j}">
+          <thead class="table-light">
+            <tr>
+              <th>Price</th>
+              <th>Platform Charge (${servicerate}%)</th>
+              <th>You Receive</th>
+              <th>Discounted Price</th>
+              <th>Platform Charge (Disc.)</th>
+              <th>You Receive (Disc.)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="basePriceCell"></td>
+              <td class="platformFeeCell"></td>
+              <td class="hostGetsCell"></td>
+              <td class="discPriceCell"></td>
+              <td class="discPlatFeeCell"></td>
+              <td class="discHostGetsCell"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    `;
+    container.appendChild(div);
+    div.querySelector('.occasion-price-input').addEventListener('input', function() {
+      updateOccTables(idx);
+    });
+  }
+  window.addOccasion = addOccasion;
+
+  // --- CALENDAR LOGIC ---
+  const now = moment();
+  const thisYear = now.year();
+  const years = [];
+  for (let y = thisYear - 5; y <= thisYear + 4; y++) years.push(y);
+
+  document.getElementById('calendarModal').addEventListener('show.bs.modal', function() {
+    const yearSelect = document.getElementById('calendarYear');
+    yearSelect.innerHTML = "";
+    years.forEach(y => {
+      const opt = document.createElement('option');
+      opt.value = y;
+      opt.textContent = y;
+      if (y === thisYear) opt.selected = true;
+      yearSelect.appendChild(opt);
+    });
+    document.getElementById('calendarMonth').value = now.month();
+    renderCalendar();
+  });
+
+  const roomCalendars =` <%- JSON.stringify(roomCalendars) %>`;
+  const rooms = `<%- JSON.stringify(rooms) %>`;
+
+  function getRoomPriceForDate(room, cal, date) {
+    const dateStr = date.format('YYYY-MM-DD');
+    // 1. Occasion
+    const occasionData = cal.find(d => d.date === dateStr && d.occasion);
+    if (occasionData) return { ...occasionData, type: 'occasion' };
+    // 2. Day-wise
+    const dayName = dayOrder[date.day()];
+    const daywiseData = cal.find(d => d.date === dateStr && d.dayWise === dayName);
+    if (daywiseData) return { ...daywiseData, type: 'daywise', dayName };
+    // 3. Base
+    const baseData = cal.find(d => d.date === dateStr);
+    if (baseData) return { ...baseData, type: 'base' };
+    return null;
+  }
+
+  function getCellClass(dayData, dateObj) {
+    if (!dayData) return "";
+    if (dayData.type === 'occasion') return "calendar-occasion";
+    if (dayData.type === 'daywise') return "calendar-daywise";
+    return "calendar-base";
+  }
+
+  function renderCalendar() {
+    const year = parseInt(document.getElementById('calendarYear').value);
+    const month = parseInt(document.getElementById('calendarMonth').value);
+    const startOfMonth = moment({ year, month, day: 1 });
+    const daysInMonth = startOfMonth.daysInMonth();
+    let html = '<table class="table table-bordered text-center"><thead><tr>';
+    for (let d = 0; d < 7; d++) html += `<th>${moment().weekday(d).format('ddd')}</th>`;
+    html += '</tr></thead><tbody><tr>';
+    let dayOfWeek = startOfMonth.day();
+    for (let i = 0; i < dayOfWeek; i++) html += '<td></td>';
+    for (let day = 1; day <= daysInMonth; day++) {
+      const date = moment({ year, month, day });
+      if ((dayOfWeek + day - 1) % 7 === 0 && day !== 1) html += '</tr><tr>';
+      let roomPrices = "";
+      let maxClass = "";
+      rooms.forEach(room => {
+        const cal = roomCalendars[room._id] || [];
+        const dayData = getRoomPriceForDate(room, cal, date);
+        const cellClass = getCellClass(dayData, date);
+        if (cellClass === "calendar-occasion") maxClass = "calendar-occasion";
+        else if (cellClass === "calendar-daywise" && maxClass === "") maxClass = "calendar-daywise";
+        else if (cellClass === "" && maxClass === "") maxClass = "calendar-base";
+        if (dayData) {
+          let priceLabel = (dayData.type === "occasion") ? "Occasion"
+            : (dayData.type === "daywise" ? (dayData.dayName.charAt(0).toUpperCase()+dayData.dayName.slice(1)) : "Base");
+          roomPrices += `<div class="mini-room-list"><b>${room.name}:</b> ₹${dayData.price} <span class="badge ${cellClass}">${priceLabel}</span></div>`;
+        } else {
+          roomPrices += `<div class="mini-room-list"><b>${room.name}:</b> - </div>`;
+        }
+      });
+      html += `<td class="calendar-cell ${maxClass}" onclick="showDayDetails('${date.format('YYYY-MM-DD')}')">
+                <div style="font-weight:bold">${day}</div>
+                ${roomPrices}
+               </td>`;
+    }
+    let filled = (dayOfWeek + daysInMonth) % 7;
+    if (filled > 0) for (let i = filled; i < 7; i++) html += '<td></td>';
+    html += '</tr></tbody></table>';
+    document.getElementById('calendarGrid').innerHTML = html;
+  }
+
+  function showDayDetails(dateStr) {
+    document.getElementById('dayDetailsDate').innerText = dateStr;
+    let html = '';
+    rooms.forEach(room => {
+      const cal = roomCalendars[room._id] || [];
+      const day = cal.find(d => d.date === dateStr);
+      html += `<div class="card mb-2">
+        <div class="card-header">
+          <b>${room.name}</b> (${room.roomType}) | Washroom: ${room.washroomType}, Style: ${room.washroomStyle}, Max: ${room.maxAttendant}
+        </div>
+        <div class="card-body">
+          <table class="table table-sm">
+            <tbody>
+              <tr><th>Price</th><td>${day ? '₹'+day.price : '-'}</td></tr>
+              <tr><th>Platform Fee</th><td>${day ? '₹'+day.platformFee.toFixed(2) : '-'}</td></tr>
+              <tr><th>You Receive</th><td>${day ? '₹'+day.hostGets.toFixed(2) : '-'}</td></tr>
+              <tr><th>Occasion</th><td>${day && day.occasion ? day.occasion : '-'}</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>`;
+    });
+    document.getElementById('dayDetailsBody').innerHTML = html;
+    var dayModal = new bootstrap.Modal(document.getElementById('dayDetailsModal'));
+    dayModal.show();
+  }
+
+  window.renderCalendar = renderCalendar;
+  window.showDayDetails = showDayDetails;
+</script>
+</body>
+</html>

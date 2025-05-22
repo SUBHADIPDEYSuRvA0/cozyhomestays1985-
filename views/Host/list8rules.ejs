@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Refund Policy and Property Rules Form</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+
+    .policy-container {
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 30px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .policy-box {
+      max-height: 200px;
+      overflow-y: auto;
+      border: 1px solid #dee2e6;
+      border-radius: 8px;
+      padding: 15px;
+      background-color: #f1f1f1;
+      font-size: 0.95rem;
+      margin-bottom: 20px;
+    }
+
+    .form-check-label {
+      font-size: 0.95rem;
+    }
+
+    .btn-submit {
+      margin-top: 20px;
+    }
+
+    .refund-policy-group,
+    .rule-input-group {
+      margin-bottom: 15px;
+      padding: 15px;
+      border: 1px dashed #ced4da;
+      border-radius: 10px;
+      position: relative;
+    }
+
+    .remove-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+    }
+     header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 60px;
+      background: #001f4d;
+      color: white;
+      display: flex;
+      align-items: center;
+      padding: 0 2rem;
+      font-weight: 600;
+      font-size: 1.5rem;
+      z-index: 1000;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    footer {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: white;
+      height: 70px;
+      box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 1000;
+    }
+
+    .progress-bar-container {
+      position: fixed;
+      bottom: 70px;
+      left: 0; right: 0;
+      height: 10px;
+      background: #fff;
+      box-shadow: inset 0 0 6px #000;
+      border: 1px solid #000;
+      border-radius: 10px;
+      overflow: hidden;
+      max-width: 100vw;
+      z-index: 1100;
+    }
+
+    .progress-water-fill {
+      height: 100%;
+      width: 75%;
+      background: linear-gradient(270deg, #000, #000000, #000);
+      background-size: 600% 600%;
+      animation: waveAnimation 8s linear infinite;
+      border-radius: 10px 0 0 10px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .progress-water-fill::before {
+      content: '';
+      position: absolute;
+      top: -15px;
+      left: 0;
+      width: 200%;
+      height: 30px;
+      background: rgba(0, 0, 0, 0.6);
+      border-radius: 40%;
+      animation: waveMotion 4s linear infinite;
+      filter: blur(1.5px);
+      opacity: 0.7;
+    }
+
+    @keyframes waveAnimation {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 100% 50%; }
+    }
+
+    @keyframes waveMotion {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    main {
+      position: fixed;
+      top: 60px;
+      overflow: auto;
+      bottom: 70px;
+      left: 0; right: 0;
+      justify-content: center;
+      align-items: center;
+      padding: 1rem;
+    }
+
+    .content-wrapper {
+      display: flex;
+      width: 100%;
+      max-width: 1200px;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .lottie-container {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-width: 300px;
+    }
+
+    .lottie-container dotlottie-player {
+      height: 80vh;
+      width: auto;
+    }
+
+    .text-container {
+      flex: 1;
+      padding: 2rem;
+      min-width: 300px;
+    }
+
+    .text-container h1 {
+      font-size: 3rem;
+      font-weight: bold;
+      color: #001f4d;
+    }
+
+    .text-container p {
+      font-size: 1.25rem;
+      color: #444;
+      margin-top: 1rem;
+    }
+
+    .btn-next,
+    .btn-back {
+      padding: 0.6rem 1.8rem;
+      font-size: 1.1rem;
+      border: none;
+      border-radius: 9999px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      min-width: 100px;
+      font-weight: 600;
+    }
+
+    .btn-next {
+      background-color: #000;
+      color: #fff;
+    }
+
+    .btn-next:hover {
+      background-color: #333;
+    }
+
+    .btn-back {
+      background-color: #e0e0e0;
+      color: #000;
+    }
+
+    .btn-back:hover {
+      background-color: #ccc;
+    }
+
+  </style>
+</head>
+<body>
+ <header>CozyHomeStays</header>
+ <main>
+<div class="policy-container">
+  <form action="/host/property/<%= propertyId %>/rules" method="POST">
+
+    <h4>Refund Policies</h4>
+    <div class="policy-box">
+      <ul>
+        <li>7 days before = 80% refund</li>
+        <li>3 days before = 50% refund</li>
+        <li>1 day before = 0% refund</li>
+      </ul>
+    </div>
+
+    <div id="refundPoliciesContainer">
+      <% if (typeof refundPolicies !== 'undefined' && refundPolicies.length > 0) { %>
+        <% refundPolicies.forEach(function(policy, idx) { %>
+          <div class="refund-policy-group">
+            <% if (idx !== 0) { %>
+              <button type="button" class="btn btn-sm btn-danger remove-btn" onclick="this.parentNode.remove()">Remove</button>
+            <% } %>
+            <div class="row">
+              <div class="col-md-6">
+                <label class="form-label">Cancellation Days</label>
+                <input type="number" class="form-control" name="refundPolicies[<%= idx %>][days]" required placeholder="e.g., 7" value="<%= policy.days %>">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Refundable Percentage</label>
+                <div class="input-group">
+                  <input type="number" class="form-control" name="refundPolicies[<%= idx %>][percent]" required placeholder="e.g., 80" value="<%= policy.percent %>">
+                  <span class="input-group-text">%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% }) %>
+      <% } else { %>
+        <div class="refund-policy-group">
+          <div class="row">
+            <div class="col-md-6">
+              <label class="form-label">Cancellation Days</label>
+              <input type="number" class="form-control" name="refundPolicies[0][days]" required placeholder="e.g., 7">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Refundable Percentage</label>
+              <div class="input-group">
+                <input type="number" class="form-control" name="refundPolicies[0][percent]" required placeholder="e.g., 80">
+                <span class="input-group-text">%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% } %>
+    </div>
+    <button type="button" class="btn btn-secondary mb-3" onclick="addRefundPolicy()">+ Add Refund Policy</button>
+
+    <div class="form-check mb-4">
+      <input class="form-check-input" type="checkbox" id="agreeRefund" required>
+      <label class="form-check-label" for="agreeRefund">
+        I agree to the above Refund Policies and entered terms.
+      </label>
+    </div>
+
+    <h4>Property Rules & Regulations</h4>
+    <div class="policy-box">
+      <ul>
+        <li>No smoking indoors.</li>
+        <li>Pets not allowed unless specified.</li>
+        <li>Quiet hours after 10 PM.</li>
+        <li>Proper garbage disposal is required.</li>
+      </ul>
+    </div>
+
+    <div id="rulesContainer">
+      <% if (typeof rules !== 'undefined' && rules.length > 0) { %>
+        <% rules.forEach(function(rule, idx) { %>
+          <div class="rule-input-group">
+            <% if (idx !== 0) { %>
+              <button type="button" class="btn btn-sm btn-danger remove-btn" onclick="this.parentNode.remove()">Remove</button>
+            <% } %>
+            <input type="text" class="form-control" name="rules[<%= idx %>]" placeholder="Enter rule (e.g., No loud music after 9 PM)" required value="<%= rule %>">
+          </div>
+        <% }) %>
+      <% } else { %>
+        <div class="rule-input-group">
+          <input type="text" class="form-control" name="rules[0]" placeholder="Enter rule (e.g., No loud music after 9 PM)" required>
+        </div>
+      <% } %>
+    </div>
+    <button type="button" class="btn btn-secondary mb-3" onclick="addRule()">+ Add Another Rule</button>
+
+    <div class="form-check mb-4">
+      <input class="form-check-input" type="checkbox" id="agreeRules" required>
+      <label class="form-check-label" for="agreeRules">
+        I confirm the above rules are accurate and I agree to the general Rules & Regulations.
+      </label>
+    </div>
+
+    <div class="progress-bar-container" role="progressbar" aria-valuenow="15" aria-valuemin="0" aria-valuemax="100">
+      <div class="progress-water-fill"></div>
+    </div>
+    <footer>
+      <a href="/host/<%= propertyId %>/selectaminities" class="btn-back">Back</a>
+      <button type="submit" class="btn-next">Next</button>
+    </footer>
+  </form>
+</div>
+</main>
+<script>
+  let refundIndex =` <%= (typeof refundPolicies !== 'undefined' && refundPolicies.length) ? refundPolicies.length : 1 %>`;
+  let ruleIndex = `<%= (typeof rules !== 'undefined' && rules.length) ? rules.length : 1 %>`;
+
+  function addRefundPolicy() {
+    const container = document.getElementById('refundPoliciesContainer');
+    const group = document.createElement('div');
+    group.classList.add('refund-policy-group');
+    group.innerHTML = `
+      <button type="button" class="btn btn-sm btn-danger remove-btn" onclick="this.parentNode.remove()">Remove</button>
+      <div class="row">
+        <div class="col-md-6">
+          <label class="form-label">Cancellation Days</label>
+          <input type="number" class="form-control" name="refundPolicies[${refundIndex}][days]" required placeholder="e.g., 3">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Refundable Percentage</label>
+          <div class="input-group">
+            <input type="number" class="form-control" name="refundPolicies[${refundIndex}][percent]" required placeholder="e.g., 50">
+            <span class="input-group-text">%</span>
+          </div>
+        </div>
+      </div>
+    `;
+    container.appendChild(group);
+    refundIndex++;
+  }
+
+  function addRule() {
+    const container = document.getElementById('rulesContainer');
+    const group = document.createElement('div');
+    group.classList.add('rule-input-group');
+    group.innerHTML = `
+      <button type="button" class="btn btn-sm btn-danger remove-btn" onclick="this.parentNode.remove()">Remove</button>
+      <input type="text" class="form-control" name="rules[${ruleIndex}]" required placeholder="Enter rule">
+    `;
+    container.appendChild(group);
+    ruleIndex++;
+  }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Login | Incredible Stays</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    /* Your existing CSS stays unchanged — copy from your file */
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #0a1128;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      background: rgba(255,255,255,0.08);
+      padding: 30px;
+      border-radius: 10px;
+      width: 400px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.4);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .tabs {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .tabs button {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 16px;
+      margin: 0 10px;
+      cursor: pointer;
+      padding-bottom: 4px;
+    }
+
+    .tabs button.active {
+      border-bottom: 2px solid white;
+    }
+
+    form {
+      display: none;
+    }
+
+    form.active {
+      display: block;
+    }
+
+    .input-group {
+      margin-bottom: 15px;
+    }
+
+    .input-group label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 14px;
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      border: none;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 10px;
+      background-color: #1e3a8a;
+      border: none;
+      border-radius: 6px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      background-color: #2563eb;
+    }
+
+    .message {
+      margin-top: 10px;
+      text-align: center;
+      font-size: 14px;
+      color: #ffd;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Incredible Stays</h2>
+    <div class="tabs">
+      <button id="loginTab" class="active">Login</button>
+      <button id="signupTab">Signup</button>
+    </div>
+
+    <!-- Login Form -->
+    <form id="loginForm" class="active">
+      <div class="input-group">
+        <label for="loginUsername">Username</label>
+        <input type="text" id="loginUsername" required />
+      </div>
+      <div class="input-group">
+        <label for="loginPassword">Password</label>
+        <input type="password" id="loginPassword" required />
+      </div>
+      <button type="submit" class="btn">Login</button>
+      <div class="message" id="loginMessage"></div>
+    </form>
+
+    <!-- Signup Form -->
+    <form id="signupForm">
+      <div class="input-group">
+        <label for="signupUsername">Username</label>
+        <input type="text" id="signupUsername" required />
+      </div>
+      <div class="input-group">
+        <label for="signupEmail">Email</label>
+        <input type="email" id="signupEmail" required />
+      </div>
+      <div class="input-group">
+        <label for="signupPassword">Password</label>
+        <input type="password" id="signupPassword" required />
+      </div>
+      <button type="button" class="btn" id="sendOtpBtn">Send OTP</button>
+      <div class="input-group">
+        <label for="otp">Enter OTP</label>
+        <input type="text" id="otp" required />
+      </div>
+      <button type="submit" class="btn">Signup</button>
+      <div class="message" id="signupMessage"></div>
+    </form>
+  </div>
+
+  <script>
+    // Tab Switching
+    const loginTab = document.getElementById("loginTab");
+    const signupTab = document.getElementById("signupTab");
+    const loginForm = document.getElementById("loginForm");
+    const signupForm = document.getElementById("signupForm");
+
+    loginTab.addEventListener("click", () => {
+      loginTab.classList.add("active");
+      signupTab.classList.remove("active");
+      loginForm.classList.add("active");
+      signupForm.classList.remove("active");
+    });
+
+    signupTab.addEventListener("click", () => {
+      signupTab.classList.add("active");
+      loginTab.classList.remove("active");
+      signupForm.classList.add("active");
+      loginForm.classList.remove("active");
+    });
+
+    // Login Form Submit
+    loginForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const username = document.getElementById("loginUsername").value;
+      const password = document.getElementById("loginPassword").value;
+
+      try {
+        const res = await fetch("/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, password }),
+        });
+        const data = await res.json();
+        document.getElementById("loginMessage").textContent = data.message || "Login success!";
+        if (res.ok) window.location.href = "/dashboard";
+      } catch (err) {
+        document.getElementById("loginMessage").textContent = "Login failed!";
+      }
+    });
+
+    // Send OTP
+    document.getElementById("sendOtpBtn").addEventListener("click", async () => {
+      const email = document.getElementById("signupEmail").value;
+      if (!email) return alert("Enter your email first");
+
+      try {
+        const res = await fetch("/sendotp", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email }),
+        });
+        const data = await res.json();
+        alert(data.message || "OTP sent!");
+      } catch (err) {
+        alert("Failed to send OTP.");
+      }
+    });
+
+    // Signup Form Submit
+    signupForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const username = document.getElementById("signupUsername").value;
+      const email = document.getElementById("signupEmail").value;
+      const password = document.getElementById("signupPassword").value;
+      const otp = document.getElementById("otp").value;
+
+      try {
+        const res = await fetch("/sighnup", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, email, password, otp }),
+        });
+        const data = await res.json();
+        document.getElementById("signupMessage").textContent = data.message || "Signup successful!";
+        if (res.ok) window.location.href = "/dashboard";
+      } catch (err) {
+        document.getElementById("signupMessage").textContent = "Signup failed!";
+      }
+    });
+  </script>
+</body>
+</html>

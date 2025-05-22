@@ -1,0 +1,161 @@
+<%- include('layout/header') %>
+
+<main class="main-content">
+  <%- include('layout/navbar') %>
+  <div class="dashboard-content">
+    <div class="container mt-4" style="display: flex; flex-direction: column; align-items: center;">
+
+      <h2 style="margin-bottom: 20px; font-size: 24px; color: #333;">Create Amenity</h2>
+
+      <!-- Form to create new amenity -->
+      <form action="/admin/aminities/create" method="POST" style="width: 100%; max-width: 600px;">
+        <div style="margin-bottom: 15px;">
+          <label for="title" style="font-size: 16px;">Amenity Title</label>
+          <input type="text" name="title" required placeholder="Enter Amenity Title"
+            style="width: 100%; border-radius: 8px; padding: 12px; border: 1px solid #ccc;">
+        </div>
+
+        <div style="margin-bottom: 15px;">
+          <label for="icon" style="font-size: 16px;">Select Icon</label>
+        <select name="icon" required onchange="previewLottie(this.value)"
+  style="width: 100%; border-radius: 8px; padding: 12px; border: 1px solid #ccc;">
+  <option value="">-- Select Amenity --</option>
+
+  <!-- Basic & Common Amenities -->
+  <option value="mdi:wifi">📶 Free Wi-Fi</option>
+  <option value="mdi:television">📺 TV</option>
+  <option value="mdi:chef-hat">👨‍🍳 Kitchen</option>
+  <option value="mdi:washing-machine">🧺 Washing Machine</option>
+  <option value="mdi:parking">🅿️ Free Parking on Premises</option>
+  <option value="mdi:car">🚗 Paid Parking on Premises</option>
+  <option value="mdi:air-conditioner">❄️ Air Conditioning</option>
+  <option value="mdi:desk">💼 Dedicated Workspace</option>
+  <option value="mdi:food">🍳 Breakfast Included</option>
+
+  <!-- Premium Amenities -->
+  <option value="mdi:pool">🏊 Swimming Pool</option>
+  <option value="mdi:hot-tub">🛁 Hot Tub</option>
+  <option value="mdi:patio">🏞 Patio</option>
+  <option value="mdi:grill">🍖 BBQ Grill</option>
+  <option value="mdi:table-furniture">🪑 Outdoor Dining Area</option>
+  <option value="mdi:campfire">🔥 Firepit / Campfire</option>
+  <option value="mdi:billiards">🎱 Pool Table</option>
+  <option value="mdi:fireplace">🔥 Indoor Fireplace</option>
+  <option value="mdi:piano">🎹 Piano</option>
+  <option value="mdi:dumbbell">🏋️ Fitness Center</option>
+  <option value="mdi:water">🌊 Lake Access</option>
+  <option value="mdi:beach">🏖 Beach Access</option>
+  <option value="mdi:ski">🎿 Ski-in/Ski-out</option>
+  <option value="mdi:shower">🚿 Outdoor Shower</option>
+
+  <!-- Safety Items -->
+  <option value="mdi:smoke-detector">🚨 Smoke Alarm</option>
+  <option value="mdi:medical-bag">🩹 First Aid Kit</option>
+  <option value="mdi:fire-extinguisher">🧯 Fire Extinguisher</option>
+  <option value="mdi:smoke-detector-variant">🧪 Carbon Monoxide Alarm</option>
+  <option value="mdi:security">🛡 Security</option>
+  <option value="mdi:cctv">📹 CCTV</option>
+
+  <!-- Hotel-Specific Features -->
+  <option value="mdi:silverware-fork-knife">🍽 Restaurant</option>
+  <option value="mdi:glass-cocktail">🍸 Bar</option>
+  <option value="mdi:spa">💆 Spa</option>
+  <option value="mdi:room-service">🛎 Room Service</option>
+
+  <!-- Family & Pet Friendly -->
+  <option value="mdi:paw">🐾 Pet Friendly</option>
+  <option value="mdi:baby-carriage">👶 Baby Facilities</option>
+  <option value="mdi:dog-service">🐶 Pet Daycare</option>
+
+  <!-- Appliances -->
+  <option value="mdi:fridge-outline">🧊 Fridge</option>
+  <option value="mdi:microwave">🔥 Microwave</option>
+  <option value="mdi:coffee-maker">☕ Coffee Maker</option>
+  <option value="mdi:hair-dryer">💇 Hair Dryer</option>
+  <option value="mdi:fan">🌀 Ceiling Fan</option>
+  <option value="mdi:elevator">🛗 Elevator</option>
+  <option value="mdi:car-battery">🔋 EV Charging</option>
+
+  <!-- Outdoor Adventure -->
+  <option value="mdi:tent">⛺ Tent Space</option>
+  <option value="mdi:bicycle">🚲 Bike Rentals</option>
+</select>
+
+        </div>
+
+        <div style="margin-bottom: 20px;">
+          <label>Icon Preview:</label>
+          <div id="lottiePreview" style="height: 80px; display: flex; align-items: center;"></div>
+        </div>
+
+        <button type="submit"
+          style="width: 100%; padding: 12px; font-size: 16px; border-radius: 8px; background-color: #007bff; color: white; border: none;">
+          Create
+        </button>
+      </form>
+
+      <!-- Amenity Cards -->
+      <h3 style="margin-top: 40px; font-size: 22px;">All Amenities</h3>
+      <div class="card-container">
+        <% if (aminity && aminity.length > 0) { %>
+          <% aminity.forEach((item) => { %>
+            <div class="card">
+              <iconify-icon icon="<%= item.icon %>" width="50" height="50"></iconify-icon>
+              <p><%= item.title %></p>
+            </div>
+          <% }) %>
+        <% } else { %>
+          <p style="margin-top: 20px; color: #777;">No amenities found.</p>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</main>
+
+<%- include('layout/footer') %>
+
+<!-- Iconify CDN -->
+<script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+
+<script>
+  function previewLottie(icon) {
+    const preview = document.getElementById("lottiePreview");
+    if (icon) {
+      preview.innerHTML = `<iconify-icon icon="${icon}" width="50" height="50"></iconify-icon>`;
+    } else {
+      preview.innerHTML = "";
+    }
+  }
+</script>
+
+<style>
+  .card-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 20px;
+    width: 100%;
+    max-width: 900px;
+    margin-top: 25px;
+  }
+
+  .card {
+    background: #f5f5f5;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    transition: transform 0.2s;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  }
+
+  .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+  }
+
+  .card p {
+    margin-top: 10px;
+    font-weight: 500;
+    font-size: 15px;
+    color: #333;
+  }
+</style>

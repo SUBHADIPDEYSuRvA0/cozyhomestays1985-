@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Select Category</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <script type="module" src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #f8f9fa;
+    }
+
+    main {
+      position: fixed;
+      top: 60px;
+      bottom: 70px;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 1rem;
+      overflow-y: auto;
+      text-align: center;
+    }
+
+    .category-form-wrapper {
+      width: 100%;
+      max-width: 1000px;
+      padding: 0 15px;
+    }
+
+    .category-card {
+      cursor: pointer;
+      border: 2px solid #e9ecef;
+      border-radius: 12px;
+      transition: all 0.3s ease;
+      padding: 1.5rem 1rem;
+      height: 100%;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+      position: relative;
+      overflow: hidden;
+      background-color: white;
+    }
+
+    .category-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+      border-color: #c8d6e5;
+    }
+
+    .category-radio:checked + .category-card {
+      border-color: #007bff;
+      background-color: #f0f7ff;
+      box-shadow: 0 8px 15px rgba(0, 123, 255, 0.2);
+    }
+
+    .category-radio:checked + .category-card::after {
+      content: "✓";
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background-color: #007bff;
+      color: white;
+      width: 25px;
+      height: 25px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    .category-radio {
+      display: none;
+    }
+
+    .card h5 {
+      margin-top: 15px;
+      font-weight: 600;
+      color: #2d3436;
+      font-size: 1.1rem;
+    }
+
+    header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 60px;
+      background: #001f4d;
+      color: white;
+      display: flex;
+      align-items: center;
+      padding: 0 2rem;
+      font-weight: 600;
+      font-size: 1.5rem;
+      z-index: 1000;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    footer {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: white;
+      height: 70px;
+      box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 1000;
+    }
+
+    .progress-bar-container {
+      position: fixed;
+      bottom: 70px;
+      left: 0; right: 0;
+      height: 10px;
+      background: #fff;
+      box-shadow: inset 0 0 6px #000;
+      border: 1px solid #000;
+      border-radius: 10px;
+      overflow: hidden;
+      max-width: 100vw;
+      z-index: 1100;
+    }
+
+    .progress-water-fill {
+      height: 100%;
+      width: 15%;
+      background: linear-gradient(270deg, #000, #000000, #000);
+      background-size: 600% 600%;
+      animation: waveAnimation 8s linear infinite;
+      border-radius: 10px 0 0 10px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .progress-water-fill::before {
+      content: '';
+      position: absolute;
+      top: -15px;
+      left: 0;
+      width: 200%;
+      height: 30px;
+      background: rgba(0, 0, 0, 0.6);
+      border-radius: 40%;
+      animation: waveMotion 4s linear infinite;
+      filter: blur(1.5px);
+      opacity: 0.7;
+    }
+
+    @keyframes waveAnimation {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 100% 50%; }
+    }
+
+    @keyframes waveMotion {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    .btn-next,
+    .btn-back {
+      padding: 0.6rem 1.8rem;
+      font-size: 1.1rem;
+      border: none;
+      border-radius: 9999px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      min-width: 100px;
+      font-weight: 600;
+    }
+
+    .btn-next {
+      background-color: #000;
+      color: #fff;
+    }
+
+    .btn-next:hover {
+      background-color: #333;
+    }
+
+    .btn-back {
+      background-color: #e0e0e0;
+      color: #000;
+    }
+
+    .btn-back:hover {
+      background-color: #ccc;
+    }
+
+    .page-title {
+      font-family: 'Georgia', serif;
+      font-weight: 700;
+      letter-spacing: 1px;
+      margin-bottom: 2rem;
+      color: #2d3436;
+    }
+
+    .page-title hr {
+      border-top: 2px solid #007bff;
+      width: 60px;
+      margin: 10px auto;
+    }
+
+    .property-cards-container {
+      margin-top: 2rem;
+    }
+
+    .card-wrapper {
+      margin-bottom: 1.5rem;
+    }
+
+    .lottie-container {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <header>CozyHomeStays</header>
+  <main>
+    <div class="category-form-wrapper">
+      <h2 class="page-title">
+        WHICH TYPE IS YOUR PROPERTY? PLEASE SELECT
+        <hr />
+      </h2>
+
+<form action="/host/property/create" method="POST">
+  <div class="property-cards-container">
+    <div class="row g-4">
+      <% categories.forEach((category, index) => { %>
+        <div class="col-md-4 col-sm-6 card-wrapper">
+          <input 
+            type="checkbox" 
+            name="categoryId" 
+            value="<%= category._id %>" 
+            class="category-checkbox d-none" 
+            id="cat-<%= index %>" 
+            data-title="<%= category.title %>" 
+          />
+          <label for="cat-<%= index %>" class="d-block h-100 clickable-card">
+            <div class="category-card">
+              <div class="lottie-container">
+                <dotlottie-player
+                  src="<%= category.icon %>"
+                  background="transparent"
+                  speed="1"
+                  style="width: 150px; height: 150px;"
+                  loop autoplay>
+                </dotlottie-player>
+              </div>
+              <h5><%= category.title %></h5>
+            </div>
+          </label>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+
+  <!-- Hidden input to store selected title -->
+  <input type="hidden" name="title" id="selected-title-input" />
+ <div class="progress-bar-container" role="progressbar" aria-valuenow="5" aria-valuemin="0" aria-valuemax="100">
+    <div class="progress-water-fill"></div>
+  </div>
+  <footer>
+    <a href="/host/list1" class="btn-back">Back</a>
+    <button type="submit" class="btn-next">Next</button>
+  </footer>
+</form>
+
+<style>
+  .category-card {
+    border: 2px solid #ddd;
+    padding: 10px;
+    border-radius: 12px;
+    transition: 0.2s;
+    cursor: pointer;
+  }
+  .category-card.selected {
+    border-color: #007bff;
+    background-color: #e6f0ff;
+  }
+</style>
+
+<script>
+  const checkboxes = document.querySelectorAll('.category-checkbox');
+  const titleInput = document.getElementById('selected-title-input');
+
+  checkboxes.forEach(checkbox => {
+    const card = checkbox.closest('.card-wrapper').querySelector('.category-card');
+
+    // Initial style sync if checkbox checked
+    if (checkbox.checked) card.classList.add('selected');
+
+    card.addEventListener('click', (e) => {
+      e.preventDefault();
+
+      // If clicked checkbox already checked, do nothing (or uncheck? up to you)
+      if (checkbox.checked) return;
+
+      // Uncheck all checkboxes and remove highlight
+      checkboxes.forEach(cb => {
+        cb.checked = false;
+        cb.closest('.card-wrapper').querySelector('.category-card').classList.remove('selected');
+      });
+
+      // Check the clicked checkbox and highlight card
+      checkbox.checked = true;
+      card.classList.add('selected');
+
+      // Update hidden input with selected title
+      titleInput.value = checkbox.dataset.title;
+    });
+
+    // Sync visual style when checkbox changes (if changed programmatically)
+    checkbox.addEventListener('change', () => {
+      card.classList.toggle('selected', checkbox.checked);
+      if (checkbox.checked) {
+        titleInput.value = checkbox.dataset.title;
+      } else {
+        titleInput.value = '';
+      }
+    });
+  });
+</script>
+
+    </div>
+  </main>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const cards = document.querySelectorAll(".category-card");
+
+      cards.forEach((card) => {
+        card.addEventListener("click", () => {
+          // Find the associated radio input
+          const label = card.closest("label");
+          const radioId = label.getAttribute("for");
+          const radioInput = document.getElementById(radioId);
+          
+          // Uncheck all radios
+          document.querySelectorAll(".category-radio").forEach(radio => {
+            radio.checked = false;
+          });
+
+          // Disable all title inputs
+          document.querySelectorAll(".category-title").forEach(input => {
+            input.disabled = true;
+          });
+
+          // Check the radio and enable title input
+          radioInput.checked = true;
+          
+          // Find and enable the corresponding title input
+          const hiddenTitleInput = label.previousElementSibling;
+          hiddenTitleInput.disabled = false;
+        });
+      });
+    });
+  </script>
+
+  <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+</body>
+</html>

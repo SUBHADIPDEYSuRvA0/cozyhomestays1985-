@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Your Rooms</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <style>
+    .property-card {
+      margin-bottom: 30px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .property-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+    }
+    .property-img {
+      object-fit: cover;
+      width: 100%;
+      height: 250px;
+    }
+    .img-modal-img {
+      width: 100%;
+      height: auto;
+      max-height: 70vh;
+      object-fit: contain;
+    }
+    .thumb-img {
+      height: 70px;
+      object-fit: cover;
+      margin: 3px;
+      cursor: pointer;
+      border: 2px solid #ddd;
+      border-radius: 4px;
+      transition: border 0.2s;
+    }
+    .thumb-img:hover {
+      border: 2px solid #007bff;
+    }
+    .modal-xl {
+      max-width: 90%;
+    }
+    .detail-section {
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #eee;
+    }
+    .detail-section:last-child {
+      border-bottom: none;
+    }
+    .detail-label {
+      font-weight: 600;
+      color: #555;
+    }
+    .gallery-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 15px;
+    }
+    .main-modal-img {
+      width: 100%;
+      height: 400px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 15px;
+    }
+    header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 60px;
+      background: #001f4d;
+      color: white;
+      display: flex;
+      align-items: center;
+      padding: 0 2rem;
+      font-weight: 600;
+      font-size: 1.5rem;
+      z-index: 1000;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .badge-custom {
+      font-size: 0.85rem;
+      padding: 6px 12px;
+      margin-right: 5px;
+      margin-bottom: 5px;
+    }
+    .price-tag {
+      background-color: #28a745;
+      color: white;
+      padding: 5px 10px;
+      border-radius: 4px;
+      font-weight: bold;
+      display: inline-block;
+      margin-bottom: 10px;
+    }
+    .room-info {
+      background-color: #f8f9fa;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 15px;
+    }
+    .policy-item {
+      margin-bottom: 8px;
+      padding-left: 20px;
+      position: relative;
+    }
+    .policy-item:before {
+      content: "•";
+      position: absolute;
+      left: 0;
+      color: #007bff;
+    }
+    main {
+      margin-top: 60px;
+      overflow: auto;
+      bottom: 70px;
+      left: 0; right: 0;
+      justify-content: center;
+      align-items: center;
+      padding: 1rem;
+    }
+    li a {
+      color: #000000 !important;
+    }
+    /* Navbar Styles */
+    .navbar {
+      background: #000e2c;
+      box-shadow: 0 2px 8px 0 rgba(60,60,60,0.03);
+      padding-top: 0.7rem;
+      padding-bottom: 0.7rem;
+      font-family: 'Segoe UI', Arial, sans-serif;
+    }
+
+    .navbar-brand {
+      font-size: 1.7rem;
+      font-weight: bold;
+      letter-spacing: 1px;
+      color: #ffffff !important;
+    }
+
+    .navbar-nav .nav-link {
+      font-size: 1.1rem;
+      color: #ffffff !important;
+      margin-right: 12px;
+      transition: color 0.18s;
+    }
+
+    .navbar-nav .nav-link:hover,
+    .navbar-nav .nav-link:focus {
+      color: #fbff00 !important;
+      text-decoration: underline;
+    }
+
+    .navbar-nav .dropdown-menu {
+      border-radius: 0.5rem;
+      box-shadow: 0 4px 16px rgba(44, 62, 80, 0.07);
+      border: none;
+    }
+
+    .navbar-nav .dropdown-item {
+      font-size: 1rem;
+      color: #000000;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .navbar-nav .dropdown-item:hover,
+    .navbar-nav .dropdown-item:focus {
+      background: #71d2ff;
+      color: #fff9f9;
+    }
+    .dropdown-toggle::after {
+      display: none !important;
+    }
+    .dropdown-divider {
+      margin: 0.3rem 0;
+    }
+
+    .navbar-toggler {
+      border: none;
+    }
+
+    @media (max-width: 991.98px) {
+      .navbar-nav .nav-link {
+        margin-right: 0;
+        margin-bottom: 8px;
+      }
+    }
+    .status-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 10;
+    }
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      background-color: #f8f9fa;
+      border-radius: 8px;
+      margin: 20px 0;
+    }
+    .empty-state i {
+      font-size: 3rem;
+      color: #6c757d;
+      margin-bottom: 15px;
+    }
+  </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg shadow-sm">
+  <div class="container-fluid">
+    <a class="navbar-brand fw-bold" style="color: #ffffff;" href="/host/home">CozyHomeStays</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="mainNavbar">
+      <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+         <a href="/host/list1">
+          <button type="button" class="btn btn-primary" style="background-color: #75f07b00; color: #ffffff; border: none;"><i class="bi bi-house-add-fill"></i> List Your Home</button>
+         </a>
+        </li>
+        <li class="nav-item">
+          <a href="/host/rooms" style="color: #000000; text-decoration: none;" class="nav-link">
+            <i class="bi bi-houses-fill"></i> Rooms
+          </a>
+        </li>
+        
+        <li class="nav-item">
+          <a class="nav-link" style="color: #000000; text-decoration: none;" href="/host/home">
+            <i class="bi bi-house-door"></i> Home
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" style="color: #000000; text-decoration: none;" href="#">
+           <i class="bi bi-calendar3"></i> calendar
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" style="color: #000000; text-decoration: none;" href="#">
+            <i class="bi bi-speedometer2"></i> Dashboard
+          </a>
+        </li>
+
+       <li class="nav-item dropdown">
+  <a class="nav-link dropdown-toggle no-caret" href="#" id="settingsDropdown" style="color: #001f4d; text-decoration: none;" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <i class="bi bi-sliders"></i>
+  </a>
+  <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="settingsDropdown">
+    <li><a class="dropdown-item" href="#">Profile</a></li>
+    <li><a class="dropdown-item" href="#">Setting Update</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><a class="dropdown-item text-danger" href="/host/auth/logout">Logout</a></li>
+  </ul>
+</li>
+
+      </ul>
+    </div>
+  </div>
+</nav>
+<main class="main-content">
+  <div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2 class="mb-0">Your Rooms</h2>
+      <a href="/host/list1" class="btn btn-primary"><i class="bi bi-plus-circle"></i> Add New Room</a>
+    </div>
+    
+    <% if (!properties || properties.length === 0) { %>
+      <div class="empty-state">
+        <i class="bi bi-house-dash"></i>
+        <h4>No Rooms Found</h4>
+        <p class="text-muted">You haven't added any rooms yet. Start by adding your first room.</p>
+        <a href="/host/list1" class="btn btn-primary mt-3"><i class="bi bi-plus-circle"></i> Add Room</a>
+      </div>
+    <% } else { %>
+      <div class="row">
+        <% properties.forEach(function(p, idx) { 
+          // Find the main image and other images
+          let mainImg, otherImgs;
+          if (p.roomId && p.roomId.mediaInput && Array.isArray(p.roomId.mediaInput)) {
+            mainImg = p.roomId.mediaInput.find(img => img.isMain);
+            otherImgs = p.roomId.mediaInput.filter(img => !img.isMain);
+          } else {
+            mainImg = null;
+            otherImgs = [];
+          }
+        %>
+          <div class="col-md-4">
+            <div class="card property-card shadow-sm" data-bs-toggle="modal" data-bs-target="#propertyModal<%= idx %>">
+              <% if (p.roomId && p.roomId.status) { %>
+                <div class="status-badge">
+                  <span class="badge <%= p.roomId.status === 'processing' ? 'bg-warning' : (p.roomId.status === 'active' ? 'bg-success' : 'bg-secondary') %>">
+                    <%= p.roomId.status %>
+                  </span>
+                </div>
+              <% } %>
+              <% if (mainImg) { %>
+                <img src="/<%= mainImg.path %>" class="card-img-top property-img" alt="Main Image">
+              <% } else { %>
+                <img src="https://via.placeholder.com/400x250?text=No+Image" class="card-img-top property-img" alt="No Image">
+              <% } %>
+              <div class="card-body">
+                <h5 class="card-title"><%= p.roomId ? p.roomId.name : 'Room' %></h5>
+                <p class="card-text">
+                  <strong>Final Price:</strong> ₹<%= p.finalPrice %> <span class="small text-secondary">[<%= p.priceSource %>]</span><br>
+                  <strong>Room Type:</strong> <%= p.roomId ? p.roomId.roomType : 'N/A' %><br>
+                  <strong>Max Attendants:</strong> <%= p.roomId ? p.roomId.maxAttendant : 'N/A' %><br>
+                  <strong>Category:</strong> <%= p.propertycategory && p.propertycategory.title ? p.propertycategory.title : 'N/A' %>
+                </p>
+                <% if (otherImgs.length) { %>
+                  <div>
+                    <span class="fw-bold">More Images:</span><br>
+                    <% otherImgs.slice(0, 3).forEach(function(img, i) { %>
+                      <img src="/<%= img.path %>" class="thumb-img" alt="Image <%= i+1 %>">
+                    <% }) %>
+                    <% if (otherImgs.length > 3) { %>
+                      <span class="badge bg-secondary">+<%= otherImgs.length - 3 %> more</span>
+                    <% } %>
+                  </div>
+                <% } %>
+              </div>
+            </div>
+          </div>
+
+          <!-- Room Detail Modal -->
+          <div class="modal fade" id="propertyModal<%= idx %>" tabindex="-1" aria-labelledby="propertyModalLabel<%= idx %>" aria-hidden="true">
+            <div class="modal-dialog modal-xl modal-dialog-scrollable">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="propertyModalLabel<%= idx %>">
+                    <%= p.roomId ? p.roomId.name : 'Room Details' %>
+                  </h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <div class="row">
+                    <!-- Left Column - Images -->
+                    <div class="col-lg-6">
+                      <% if (mainImg) { %>
+                        <img src="/<%= mainImg.path %>" class="main-modal-img" alt="Main Room Image">
+                      <% } else { %>
+                        <img src="https://via.placeholder.com/800x500?text=No+Image" class="main-modal-img" alt="No Image">
+                      <% } %>
+                      
+                      <% if (otherImgs.length) { %>
+                        <h6 class="mb-3">Room Gallery</h6>
+                        <div class="gallery-container">
+                          <% otherImgs.forEach(function(img, i) { %>
+                            <img src="/<%= img.path %>" class="thumb-img" alt="Image <%= i+1 %>" 
+                                data-bs-toggle="modal" 
+                                data-bs-target="#modal-img-<%= idx %>-<%= i %>">
+                          <% }) %>
+                        </div>
+                      <% } %>
+                    </div>
+                    
+                    <!-- Right Column - Details -->
+                    <div class="col-lg-6">
+                      <div class="price-tag mb-3">
+                        ₹<%= p.finalPrice %> <span class="small">[<%= p.priceSource %>]</span>
+                      </div>
+                      
+                      <!-- Basic Information -->
+                      <div class="detail-section">
+                        <h5>Room Information</h5>
+                        <div class="row">
+                          <div class="col-md-6">
+                            <p><span class="detail-label">Room Type:</span> <%= p.roomId ? p.roomId.roomType : 'N/A' %></p>
+                            <p><span class="detail-label">Total Rooms:</span> <%= p.roomId ? p.roomId.totalRooms : 'N/A' %></p>
+                            <p><span class="detail-label">Max Attendants:</span> <%= p.roomId ? p.roomId.maxAttendant : 'N/A' %></p>
+                          </div>
+                          <div class="col-md-6">
+                            <p><span class="detail-label">Washroom Style:</span> <%= p.roomId ? p.roomId.washroomStyle : 'N/A' %></p>
+                            <p><span class="detail-label">Washroom Type:</span> <%= p.roomId ? p.roomId.washroomType : 'N/A' %></p>
+                            <p><span class="detail-label">Status:</span> 
+                              <span class="badge <%= p.roomId && p.roomId.status === 'processing' ? 'bg-warning' : (p.roomId && p.roomId.status === 'active' ? 'bg-success' : 'bg-secondary') %>">
+                                <%= p.roomId ? p.roomId.status : 'N/A' %>
+                              </span>
+                            </p>
+                          </div>
+                        </div>
+                        
+                        <% if (p.roomId && p.roomId.addextrabed) { %>
+                          <div class="alert alert-info mt-2">
+                            <p class="mb-0"><strong>Extra Bed Available</strong> - Additional charge: ₹<%= p.roomId.addextrabed_charge %></p>
+                          </div>
+                        <% } %>
+                        
+                        <% if (p.roomId && p.roomId.extraguistcharge > 0) { %>
+                          <div class="alert alert-info mt-2">
+                            <p class="mb-0"><strong>Extra Guest Charge:</strong> ₹<%= p.roomId.extraguistcharge %> per additional guest</p>
+                          </div>
+                        <% } %>
+                      </div>
+                      
+                      <!-- Property Information -->
+                      <div class="detail-section">
+                        <h5>Property Information</h5>
+                        <div class="row">
+                          <div class="col-md-6">
+                            <p><span class="detail-label">Category:</span> <%= p.propertycategory && p.propertycategory.title ? p.propertycategory.title : 'N/A' %></p>
+                            <p><span class="detail-label">Listing Type:</span> <%= p.propertyListingType && p.propertyListingType.listingType ? p.propertyListingType.listingType : 'N/A' %></p>
+                          </div>
+                          <div class="col-md-6">
+                            <p><span class="detail-label">Check-in:</span> <%= p.checkInTime ? new Date(p.checkInTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'N/A' %></p>
+                            <p><span class="detail-label">Check-out:</span> <%= p.checkOutTime ? new Date(p.checkOutTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'N/A' %></p>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <!-- Location Information -->
+                      <% if (p.PropertyAddress) { %>
+                        <div class="detail-section">
+                          <h5>Location</h5>
+                          <p><span class="detail-label">Property Name:</span> <%= p.PropertyAddress.propertyName || 'N/A' %></p>
+                          <p><span class="detail-label">Address:</span> <%= p.PropertyAddress.fullAddress || p.PropertyAddress.mapAddress || 'N/A' %></p>
+                          <p><span class="detail-label">City:</span> <%= p.PropertyAddress.city || 'N/A' %>, <span class="detail-label">State:</span> <%= p.PropertyAddress.state || 'N/A' %></p>
+                          <p><span class="detail-label">Pincode:</span> <%= p.PropertyAddress.pincode || 'N/A' %></p>
+                          <% if (p.PropertyAddress.nearby) { %>
+                            <p><span class="detail-label">Nearby:</span> <%= p.PropertyAddress.nearby %></p>
+                          <% } %>
+                        </div>
+                      <% } %>
+                      
+                      <!-- Pricing Information -->
+                      <div class="detail-section">
+                        <h5>Pricing Details</h5>
+                        <p><span class="detail-label">Base Price:</span> ₹<%= p.basePrice || 'N/A' %></p>
+                        
+                        <% if (p.dayWisePrices && Object.keys(p.dayWisePrices).length > 0) { %>
+                          <p><span class="detail-label">Day-wise Pricing:</span></p>
+                          <div class="row">
+                            <% for (const [day, price] of Object.entries(p.dayWisePrices)) { %>
+                              <div class="col-md-4 mb-2">
+                                <span class="badge bg-secondary badge-custom"><%= day %>: ₹<%= price %></span>
+                              </div>
+                            <% } %>
+                          </div>
+                        <% } %>
+                        
+                        <% if (p.occasionPrices && p.occasionPrices.length > 0) { %>
+                          <p class="mt-2"><span class="detail-label">Special Occasion Pricing:</span></p>
+                          <div class="row">
+                            <% p.occasionPrices.forEach(function(occasion) { %>
+                              <div class="col-md-6 mb-2">
+                                <div class="card">
+                                  <div class="card-body p-2">
+                                    <h6 class="card-title"><%= occasion.name %></h6>
+                                    <p class="card-text small mb-1">
+                                      <%= new Date(occasion.startDate).toLocaleDateString() %> - 
+                                      <%= new Date(occasion.endDate).toLocaleDateString() %>
+                                    </p>
+                                    <p class="card-text"><strong>₹<%= occasion.price %></strong></p>
+                                  </div>
+                                </div>
+                              </div>
+                            <% }) %>
+                          </div>
+                        <% } %>
+                        
+                        <% if (p.discount && p.discount.isActive) { %>
+                          <div class="alert alert-success mt-2">
+                            <p class="mb-0"><strong>Discount Available:</strong> <%= p.discount.percentage %>% off</p>
+                            <p class="small mb-0">Applicable for first <%= p.discount.bookingsLimit %> bookings 
+                              (Used: <%= p.discount.usedCount %>)</p>
+                          </div>
+                        <% } %>
+                      </div>
+                      
+                      <!-- Property Policies -->
+                      <% if (p.PropertyPolicy) { %>
+                        <div class="detail-section">
+                          <h5>Property Policies</h5>
+                          
+                          <% if (p.PropertyPolicy.refundPolicies && p.PropertyPolicy.refundPolicies.length > 0) { %>
+                            <h6 class="mt-3">Refund Policies</h6>
+                            <ul class="list-unstyled">
+                              <% p.PropertyPolicy.refundPolicies.forEach(function(policy) { %>
+                                <li class="policy-item">
+                                  Cancel <%= policy.days %> days before check-in: <%= policy.percent %>% refund
+                                </li>
+                              <% }) %>
+                            </ul>
+                          <% } %>
+                          
+                          <% if (p.PropertyPolicy.rules && p.PropertyPolicy.rules.length > 0) { %>
+                            <h6 class="mt-3">Property Rules</h6>
+                            <ul class="list-unstyled">
+                              <% p.PropertyPolicy.rules.forEach(function(rule) { %>
+                                <li class="policy-item"><%= rule %></li>
+                              <% }) %>
+                            </ul>
+                          <% } %>
+                        </div>
+                      <% } %>
+                    </div>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <a href="/host/<%= p.roomId.propertyId ? p.roomId.propertyId : '' %>/roomprice" class="btn btn-primary me-2">
+                    <i class="bi bi-pencil"></i> Edit Room
+                  </a>
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Image Modals -->
+          <% if (otherImgs.length) { %>
+            <% otherImgs.forEach(function(img, i) { %>
+              <div class="modal fade" id="modal-img-<%= idx %>-<%= i %>" tabindex="-1" aria-labelledby="imgModalLabel<%= idx %>-<%= i %>" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-lg">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="imgModalLabel<%= idx %>-<%= i %>">Room Image</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body text-center">
+                      <img src="/<%= img.path %>" class="img-modal-img" alt="Modal Image">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            <% }) %>
+          <% } %>
+        <% }) %>
+      </div>
+    <% } %>
+  </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

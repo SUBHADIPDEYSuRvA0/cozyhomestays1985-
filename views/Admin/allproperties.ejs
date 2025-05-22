@@ -1,0 +1,1976 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Property Management Dashboard</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- DataTables CSS -->
+  <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+  <link href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.bootstrap5.min.css" rel="stylesheet">
+  <link href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.bootstrap5.min.css" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Custom CSS -->
+  <style>
+    :root {
+      --primary-color: #4361ee;
+      --secondary-color: #3f37c9;
+      --success-color: #4caf50;
+      --info-color: #2196f3;
+      --warning-color: #ff9800;
+      --danger-color: #f44336;
+      --light-color: #f8f9fa;
+      --dark-color: #212529;
+    }
+    
+    body {
+      background-color: #f5f7fb;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    .card {
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
+      border: none;
+    }
+    
+    .card-header {
+      background-color: var(--primary-color);
+      color: white;
+      border-radius: 10px 10px 0 0 !important;
+      padding: 15px 20px;
+      font-weight: 600;
+    }
+    
+    .search-container {
+      background-color: white;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    
+    .table-container {
+      background-color: white;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    
+    .property-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+    }
+    
+    .property-table th {
+      background-color: #f8f9fa;
+      color: #495057;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.8rem;
+      padding: 12px 15px;
+      border-bottom: 2px solid #dee2e6;
+      white-space: nowrap;
+    }
+    
+    .property-table td {
+      padding: 12px 15px;
+      vertical-align: middle;
+      border-bottom: 1px solid #dee2e6;
+    }
+    
+    .property-table tbody tr:hover {
+      background-color: rgba(67, 97, 238, 0.05);
+      cursor: pointer;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      transition: all 0.2s ease;
+    }
+    
+    .property-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+    
+    .badge-property {
+      background-color: var(--success-color);
+      color: white;
+      padding: 5px 10px;
+      border-radius: 4px;
+      font-weight: 500;
+      font-size: 0.75rem;
+    }
+    
+    .badge-room {
+      background-color: var(--info-color);
+      color: white;
+      padding: 5px 10px;
+      border-radius: 4px;
+      font-weight: 500;
+      font-size: 0.75rem;
+    }
+    
+    .status-active {
+      color: var(--success-color);
+      font-weight: 600;
+    }
+    
+    .status-inactive {
+      color: var(--danger-color);
+      font-weight: 600;
+    }
+    
+    .property-img {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 5px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      transition: transform 0.2s ease;
+    }
+    
+    .property-img:hover {
+      transform: scale(1.1);
+    }
+    
+    .btn-action {
+      padding: 5px 10px;
+      margin-right: 5px;
+      border-radius: 4px;
+      transition: all 0.2s ease;
+    }
+    
+    .btn-action:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    
+    .price-tag {
+      font-weight: 600;
+      color: var(--primary-color);
+    }
+    
+    .modal-header {
+      background-color: var(--primary-color);
+      color: white;
+      border-radius: 10px 10px 0 0;
+    }
+    
+    .modal-content {
+      border-radius: 10px;
+      border: none;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+    
+    .modal-img {
+      max-height: 300px;
+      object-fit: cover;
+      border-radius: 5px;
+    }
+    
+    .detail-label {
+      font-weight: 600;
+      color: #495057;
+    }
+    
+    .detail-value {
+      color: #212529;
+    }
+    
+    .price-card {
+      background-color: #f8f9fa;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 15px;
+    }
+    
+    .price-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary-color);
+    }
+    
+    .user-info {
+      display: flex;
+      align-items: center;
+    }
+    
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: var(--primary-color);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      margin-right: 10px;
+    }
+    
+    .pagination {
+      margin-top: 20px;
+    }
+    
+    .pagination .page-item.active .page-link {
+      background-color: var(--primary-color);
+      border-color: var(--primary-color);
+    }
+    
+    .pagination .page-link {
+      color: var(--primary-color);
+    }
+    
+    .dataTables_filter input {
+      border-radius: 4px;
+      border: 1px solid #ced4da;
+      padding: 6px 12px;
+    }
+    
+    .dataTables_length select {
+      border-radius: 4px;
+      border: 1px solid #ced4da;
+      padding: 6px 12px;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 40px 0;
+    }
+    
+    .empty-state i {
+      font-size: 3rem;
+      color: #dee2e6;
+      margin-bottom: 15px;
+    }
+    
+    .empty-state p {
+      color: #6c757d;
+      font-size: 1.1rem;
+    }
+    
+    .dt-buttons {
+      margin-bottom: 15px;
+    }
+    
+    .dt-button {
+      background-color: #f8f9fa !important;
+      border-color: #ced4da !important;
+      color: #495057 !important;
+      border-radius: 4px !important;
+      padding: 6px 12px !important;
+      font-size: 0.875rem !important;
+    }
+    
+    .dt-button:hover {
+      background-color: #e9ecef !important;
+      border-color: #ced4da !important;
+    }
+    
+    .dt-button:focus {
+      box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25) !important;
+    }
+    
+    .dataTables_info {
+      font-size: 0.875rem;
+      color: #6c757d;
+    }
+    
+    .table-stats {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    
+    .stat-card {
+      background-color: white;
+      border-radius: 8px;
+      padding: 15px;
+      flex: 1;
+      margin-right: 15px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      display: flex;
+      align-items: center;
+    }
+    
+    .stat-card:last-child {
+      margin-right: 0;
+    }
+    
+    .stat-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 15px;
+      font-size: 1.5rem;
+      color: white;
+    }
+    
+    .stat-icon.properties {
+      background-color: var(--success-color);
+    }
+    
+    .stat-icon.rooms {
+      background-color: var(--info-color);
+    }
+    
+    .stat-icon.users {
+      background-color: var(--warning-color);
+    }
+    
+    .stat-icon.revenue {
+      background-color: var(--primary-color);
+    }
+    
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 5px;
+    }
+    
+    .stat-label {
+      font-size: 0.875rem;
+      color: #6c757d;
+    }
+    
+    .table-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    
+    .table-filter {
+      display: flex;
+      align-items: center;
+    }
+    
+    .table-filter select {
+      margin-left: 10px;
+      border-radius: 4px;
+      border: 1px solid #ced4da;
+      padding: 6px 12px;
+      font-size: 0.875rem;
+    }
+    
+    .table-search {
+      position: relative;
+    }
+    
+    .table-search input {
+      border-radius: 4px;
+      border: 1px solid #ced4da;
+      padding: 6px 12px 6px 35px;
+      font-size: 0.875rem;
+      width: 250px;
+    }
+    
+    .table-search i {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #6c757d;
+    }
+    
+    .filter-panel {
+      background-color: #f8f9fa;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 20px;
+    }
+    
+    .filter-panel .form-label {
+      font-weight: 600;
+      font-size: 0.875rem;
+      color: #495057;
+    }
+    
+    .filter-panel .form-control {
+      font-size: 0.875rem;
+    }
+    
+    .filter-panel .btn {
+      font-size: 0.875rem;
+    }
+    
+    .filter-badge {
+      background-color: var(--primary-color);
+      color: white;
+      padding: 5px 10px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      margin-right: 5px;
+      margin-bottom: 5px;
+      display: inline-flex;
+      align-items: center;
+    }
+    
+    .filter-badge .close {
+      margin-left: 5px;
+      font-size: 0.875rem;
+      cursor: pointer;
+    }
+    
+    .active-filters {
+      margin-bottom: 15px;
+    }
+    
+    .nav-tabs .nav-link {
+      color: #495057;
+      border: none;
+      border-bottom: 2px solid transparent;
+      padding: 0.5rem 1rem;
+      margin-right: 1rem;
+      font-weight: 500;
+    }
+    
+    .nav-tabs .nav-link.active {
+      color: var(--primary-color);
+      background-color: transparent;
+      border-bottom: 2px solid var(--primary-color);
+    }
+    
+    .nav-tabs .nav-link:hover {
+      border-color: transparent;
+      border-bottom: 2px solid #dee2e6;
+    }
+    
+    .document-card {
+      border: 1px solid #dee2e6;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 15px;
+    }
+    
+    .document-card-header {
+      background-color: #f8f9fa;
+      padding: 10px 15px;
+      border-bottom: 1px solid #dee2e6;
+      font-weight: 600;
+    }
+    
+    .document-card-body {
+      padding: 15px;
+    }
+    
+    .document-img {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 4px;
+      margin-bottom: 10px;
+    }
+    
+    .verification-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 1;
+    }
+    
+    .owner-list {
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    
+    .owner-item {
+      padding: 10px;
+      border-bottom: 1px solid #dee2e6;
+    }
+    
+    .owner-item:last-child {
+      border-bottom: none;
+    }
+    
+    @media (max-width: 992px) {
+      .property-table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+      }
+      
+      .table-stats {
+        flex-wrap: wrap;
+      }
+      
+      .stat-card {
+        flex: 1 0 calc(50% - 15px);
+        margin-bottom: 15px;
+      }
+    }
+    
+    @media (max-width: 576px) {
+      .stat-card {
+        flex: 1 0 100%;
+      }
+      
+      .table-actions {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .table-filter {
+        margin-bottom: 15px;
+      }
+    }
+    .image-hover-wrapper {
+  display: inline-block;
+  position: relative;
+}
+.image-hover-modal {
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.85);
+  align-items: center;
+  justify-content: center;
+}
+.image-hover-modal img {
+  max-width: 50vw;
+  max-height: 50vh;
+  box-shadow: 0 0 30px #000;
+  display: block;
+  margin: auto;
+}
+.image-hover-wrapper:hover .image-hover-modal {
+  display: flex;
+}
+  </style>
+</head>
+<body>
+  <%- include('layout/header') %>
+  <main class="main-content">
+    <div class="dashboard-content">
+      <div class="container-fluid py-4">
+        <div class="row mb-4">
+          <div class="col">
+            <h2 class="fw-bold text-dark">Property Management</h2>
+            <p class="text-muted">Manage all properties and rooms</p>
+          </div>
+          <div class="col-auto">
+            <button class="btn btn-primary" id="addPropertyBtn">
+              <i class="fas fa-plus me-2"></i> Add New Property
+            </button>
+          </div>
+        </div>
+        
+        <!-- Stats Cards -->
+        <div class="table-stats mb-4">
+          <div class="stat-card">
+            <div class="stat-icon properties">
+              <i class="fas fa-building"></i>
+            </div>
+            <div>
+              <div class="stat-value"><%= stats.totalProperties %></div>
+              <div class="stat-label">Total Properties</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon users">
+              <i class="fas fa-user-check"></i>
+            </div>
+            <div>
+              <div class="stat-value"><%= stats.totalVerifiedOwners %></div>
+              <div class="stat-label">Verified Owners</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon users">
+              <i class="fas fa-users"></i>
+            </div>
+            <div>
+              <div class="stat-value"><%= stats.totalOwners %></div>
+              <div class="stat-label">Property Owners</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon revenue">
+              <i class="fas fa-rupee-sign"></i>
+            </div>
+            <div>
+              <div class="stat-value"><%= stats.totalValue.toLocaleString('en-IN') %></div>
+              <div class="stat-label">Total Value (₹)</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Filter Panel -->
+        <div class="card mb-4">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Search & Filter</h5>
+            <button class="btn btn-sm btn-light" type="button" data-bs-toggle="collapse" data-bs-target="#filterCollapse">
+              <i class="fas fa-filter"></i>
+            </button>
+          </div>
+          <div class="collapse show" id="filterCollapse">
+            <div class="card-body">
+              <form id="filterForm" class="row g-3">
+                <div class="col-md-4">
+                  <label for="location" class="form-label">Location</label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
+                    <input type="text" class="form-control" id="location" name="location" placeholder="City, State" value="<%= filters.location || '' %>">
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <label for="search" class="form-label">Search</label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                    <input type="text" class="form-control" id="search" name="search" placeholder="Property name, city..." value="<%= filters.search || '' %>">
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <label for="propertyType" class="form-label">Property Type</label>
+                  <select class="form-select" id="propertyType" name="propertyType">
+                    <option value="">All Types</option>
+                    <% listingTypes.forEach(function(type) { %>
+                      <option value="<%= type.value %>" <%= filters.propertyType === type.value ? 'selected' : '' %>><%= type.label %></option>
+                    <% }); %>
+                  </select>
+                </div>
+                <div class="col-md-3">
+                  <label for="minPrice" class="form-label">Min Price (₹)</label>
+                  <input type="number" class="form-control" id="minPrice" name="minPrice" placeholder="Min" value="<%= filters.minPrice || '' %>">
+                </div>
+                <div class="col-md-3">
+                  <label for="maxPrice" class="form-label">Max Price (₹)</label>
+                  <input type="number" class="form-control" id="maxPrice" name="maxPrice" placeholder="Max" value="<%= filters.maxPrice || '' %>">
+                </div>
+                <div class="col-md-3">
+                  <label for="status" class="form-label">Status</label>
+                  <select class="form-select" id="status" name="status">
+                    <option value="">All Statuses</option>
+                    <option value="Active" <%= filters.status === 'Active' ? 'selected' : '' %>>Active</option>
+                    <option value="Inactive" <%= filters.status === 'Inactive' ? 'selected' : '' %>>Inactive</option>
+                  </select>
+                </div>
+                <div class="col-md-3">
+                  <label for="sortBy" class="form-label">Sort By</label>
+                  <div class="input-group">
+                    <select class="form-select" id="sortBy" name="sortBy">
+                      <option value="createdAt" <%= filters.sortBy === 'createdAt' ? 'selected' : '' %>>Date</option>
+                      <option value="price" <%= filters.sortBy === 'price' ? 'selected' : '' %>>Price</option>
+                      <option value="name" <%= filters.sortBy === 'name' ? 'selected' : '' %>>Name</option>
+                    </select>
+                    <select class="form-select" id="sortOrder" name="sortOrder">
+                      <option value="desc" <%= filters.sortOrder === 'desc' ? 'selected' : '' %>>Desc</option>
+                      <option value="asc" <%= filters.sortOrder === 'asc' ? 'selected' : '' %>>Asc</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-12 mt-3">
+                  <button type="submit" class="btn btn-primary me-2">
+                    <i class="fas fa-search me-2"></i> Apply Filters
+                  </button>
+                  <button type="button" id="resetFiltersBtn" class="btn btn-outline-secondary">
+                    <i class="fas fa-redo me-2"></i> Reset Filters
+                  </button>
+                </div>
+              </form>
+              
+              <!-- Active Filters -->
+              <div class="active-filters mt-4" id="activeFilters">
+                <% if (filters.location || filters.search || filters.minPrice || filters.maxPrice || filters.propertyType || filters.status) { %>
+                  <div class="mb-2">Active Filters:</div>
+                  <% if (filters.location) { %>
+                    <span class="filter-badge" data-filter="location">
+                      Location: <%= filters.location %>
+                      <i class="fas fa-times close"></i>
+                    </span>
+                  <% } %>
+                  <% if (filters.search) { %>
+                    <span class="filter-badge" data-filter="search">
+                      Search: <%= filters.search %>
+                      <i class="fas fa-times close"></i>
+                    </span>
+                  <% } %>
+                  <% if (filters.minPrice) { %>
+                    <span class="filter-badge" data-filter="minPrice">
+                      Min Price: ₹<%= filters.minPrice %>
+                      <i class="fas fa-times close"></i>
+                    </span>
+                  <% } %>
+                  <% if (filters.maxPrice) { %>
+                    <span class="filter-badge" data-filter="maxPrice">
+                      Max Price: ₹<%= filters.maxPrice %>
+                      <i class="fas fa-times close"></i>
+                    </span>
+                  <% } %>
+                  <% if (filters.propertyType) { %>
+                    <span class="filter-badge" data-filter="propertyType">
+                      Type: <%= filters.propertyType === 'entireProperty' ? 'Entire Property' : 'Room Wise' %>
+                      <%= filters.propertyType%>
+                      <i class="fas fa-times close"></i>
+                    </span>
+                  <% } %>
+                  <% if (filters.status) { %>
+                    <span class="filter-badge" data-filter="status">
+                      Status: <%= filters.status %>
+                      <i class="fas fa-times close"></i>
+                    </span>
+                  <% } %>
+                <% } %>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Table Container -->
+        <div class="card table-container">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">All Properties</h5>
+            <div class="btn-group" role="group">
+              <button type="button" class="btn btn-sm btn-outline-light active" id="tableViewBtn">
+                <i class="fas fa-table me-1"></i> Table
+              </button>
+              <button type="button" class="btn btn-sm btn-outline-light" id="gridViewBtn">
+                <i class="fas fa-th me-1"></i> Grid
+              </button>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="table-actions">
+              <div class="table-filter">
+                <label for="listingTypeFilter" class="me-2">Quick Filter:</label>
+                <select id="listingTypeFilter" class="form-select form-select-sm">
+                  <option value="">All Listing Types</option>
+                  <% listingTypes.forEach(function(type) { %>
+                    <option value="<%= type.value %>"><%= type.label %></option>
+                  <% }); %>
+                </select>
+                <select id="categoryFilter" class="form-select form-select-sm ms-2">
+                  <option value="">All Categories</option>
+                  <% categories.forEach(function(category) { %>
+                    <option value="<%= category %>"><%= category %></option>
+                  <% }); %>
+                </select>
+              </div>
+              <div class="table-search">
+                <i class="fas fa-search"></i>
+                <input type="text" id="quickSearch" class="form-control form-control-sm" placeholder="Quick search...">
+              </div>
+            </div>
+            
+            <% if (items && items.length > 0) { %>
+              <div class="table-responsive">
+                <table id="propertyTable" class="property-table table table-hover">
+                  <thead>
+                    <tr>
+                      <th style="width: 80px">Image</th>
+                      <th style="width: 100px">Listing Type</th>
+                      <th>Title</th>
+                      <th>Price</th>
+                      <th>Location</th>
+                      <th>Category</th>
+                      <th>Owner</th>
+                      <th>Status</th>
+                      <th>Created</th>
+                      <th style="width: 120px">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% items.forEach(function(item) { %>
+                      <tr class="property-row" data-id="<%= item.propertyId %>" data-type="<%= item.type %>" data-property='<%= JSON.stringify(item).replace(/'/g, "&#39;") %>'>
+                        <td>
+                          <% if (item.cardImages && item.cardImages.length > 0) { %>
+                            <img src="/<%= item.cardImages[0].path %>" class="property-img" alt="<%= item.cardTitle %>">
+                            <% if (item.cardImages.length > 1) { %>
+                              <% for (let i = 1; i < item.cardImages.length; i++) { %>
+                               <div class="image-hover-wrapper">
+  <img src="/<%= item.cardImages[i].path %>" class="listing-image property-img" alt="..." />
+  <div class="image-hover-modal">
+    <img src="/<%= item.cardImages[i].path %>" />
+  </div>
+</div>
+                              <% } %>
+                            <% } %>
+                              <span class="image-count">+<%= item.cardImages.length - 1 %></span>
+                            <% if (item.cardImages.length > 1) { %>
+                              
+                              
+                            <% } %>
+                          <% } else if (item.mainImage) { %>
+                            <img src="/<%= item.mainImage.path %>" class="property-img" alt="<%= item.cardTitle %>">
+                          <% } else if (item.images && item.images.length > 0) { %>
+                            <img src="/<%= item.images[0].path %>" class="property-img" alt="<%= item.cardTitle %>">
+                            <% if (item.images.length > 1) { %>
+                              <span class="image-count">+<%= item.images.length - 1 %></span>
+                            <% } %>
+                           
+                            
+                          <% } else { %>
+                            <div class="property-img d-flex align-items-center justify-content-center bg-light">
+                              <i class="fas fa-image text-muted"></i>
+                            </div>
+                          <% } %>
+                        </td>
+                        <td>
+                          <span class="badge <%= item.listingType  %> text-dark">
+                            <%= item.listingType.listingType === 'entireProperty' ? 'Entire Property' : 'Room Wise' %>
+                          </span>
+                        </td>
+                        <td><strong><%= item.cardTitle %></strong></td>
+                        <td class="price-tag">₹<%= item.finalPrice.toLocaleString('en-IN') %></td>
+                        <td>
+                          <% if (item.PropertyAddress) { %>
+                            <i class="fas fa-map-marker-alt text-danger me-1"></i>
+                            <%= item.PropertyAddress.city || 'N/A' %>, <%= item.PropertyAddress.state || 'N/A' %>
+                            <% if (item.PropertyAddress.pincode) { %><small class="text-muted"><%= item.PropertyAddress.pincode %></small><% } %>
+                          <% } else { %>
+                            <span class="text-muted">No address</span>
+                          <% } %>
+                        </td>
+                        <td><span class="badge bg-secondary"><%= item.category %></span></td>
+                        <td>
+                          <% if (item.user) { %>
+                            <div class="user-info">
+                              <div class="user-avatar">
+                                <%= item.user.name ? item.user.name.charAt(0) : 'U' %>
+                              </div>
+                              <div>
+                                <div><%= item.user.name || 'Unknown' %></div>
+                                <small class="text-muted"><%= item.user.role || 'User' %></small>
+                                <small class="text-muted"><%= item.user.email || 'No email' %></small>
+                                <small class="text-muted"><%= item.user.phone || 'No phone' %></small>
+                              </div>
+                            </div>
+                          <% } else { %>
+                            <span class="text-muted">Unknown</span>
+                          <% } %>
+                        </td>
+                        <td>
+                          <% if (item.user && item.user.status) { %>
+                            <span class="<%= item.user.status === 'Active' ? 'status-active' : 'status-inactive' %>">
+                              <%= item.user.status %>
+                            </span>
+                          <% } else { %>
+                            <span class="text-muted">Unknown</span>
+                          <% } %>
+                        </td>
+                        <td>
+                          <div><%= moment(item.createdAt).format('DD MMM YYYY') %></div>
+                          <small class="text-muted"><%= moment(item.createdAt).format('hh:mm A') %></small>
+                        </td>
+                        <td>
+                          <div class="d-flex">
+                            <button class="btn btn-sm btn-primary btn-action view-details" data-id="<%= item.propertyId %>" data-type="<%= item.type %>" data-bs-toggle="tooltip" title="View Details">
+                              <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn btn-sm btn-warning btn-action ms-1" data-bs-toggle="tooltip" title="Edit">
+                              <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-danger btn-action ms-1" data-bs-toggle="tooltip" title="Delete">
+                              <i class="fas fa-trash"></i>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    <% }); %>
+                  </tbody>
+                </table>
+              </div>
+            <% } else { %>
+              <div class="empty-state">
+                <i class="fas fa-home"></i>
+                <h4>No Properties Found</h4>
+                <p>There are no properties matching your search criteria.</p>
+                <button id="clearFiltersBtn" class="btn btn-outline-primary mt-3">
+                  <i class="fas fa-filter me-2"></i> Clear Filters
+                </button>
+              </div>
+            <% } %>
+          </div>
+        </div>
+      </div>
+
+      <!-- Property Detail Modal -->
+      <div class="modal fade" id="propertyModal" tabindex="-1" aria-labelledby="propertyModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="propertyModalLabel">Property Details</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <ul class="nav nav-tabs mb-4" id="propertyModalTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link active" id="property-tab" data-bs-toggle="tab" data-bs-target="#property-tab-pane" type="button" role="tab" aria-controls="property-tab-pane" aria-selected="true">Property Details</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link" id="owner-tab" data-bs-toggle="tab" data-bs-target="#owner-tab-pane" type="button" role="tab" aria-controls="owner-tab-pane" aria-selected="false">Owner Details</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link" id="documents-tab" data-bs-toggle="tab" data-bs-target="#documents-tab-pane" type="button" role="tab" aria-controls="documents-tab-pane" aria-selected="false">Documents</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link" id="pricing-tab" data-bs-toggle="tab" data-bs-target="#pricing-tab-pane" type="button" role="tab" aria-controls="pricing-tab-pane" aria-selected="false">Pricing</button>
+                </li>
+              </ul>
+              
+              <div class="tab-content" id="propertyModalTabContent">
+                <!-- Property Details Tab -->
+                <div class="tab-pane fade show active" id="property-tab-pane" role="tabpanel" aria-labelledby="property-tab" tabindex="0">
+                  <div id="propertyCarousel" class="carousel slide mb-4" data-bs-ride="carousel">
+                    <div class="carousel-indicators" id="modalCarouselIndicators">
+                      <!-- Indicators will be inserted here by JavaScript -->
+                    </div>
+                    <div class="carousel-inner" id="modalCarouselInner">
+                      <!-- Images will be inserted here by JavaScript -->
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#propertyCarousel" data-bs-slide="prev">
+                      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                      <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#propertyCarousel" data-bs-slide="next">
+                      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                      <span class="visually-hidden">Next</span>
+                    </button>
+                  </div>
+                  
+                  <div class="row">
+                    <div class="col-md-12">
+                      <h3 id="modalTitle" class="mb-3"></h3>
+                      <div class="mb-4" id="modalAddress">
+                        <i class="fas fa-map-marker-alt text-danger me-2"></i>
+                        <span></span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="card mb-4">
+                        <div class="card-header">
+                          <h5 class="mb-0">Basic Details</h5>
+                        </div>
+                        <div class="card-body">
+                          <ul class="list-group list-group-flush" id="modalDetailsList1">
+                            <!-- Details will be inserted here by JavaScript -->
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                      <div class="card mb-4">
+                        <div class="card-header">
+                          <h5 class="mb-0">Additional Details</h5>
+                        </div>
+                        <div class="card-body">
+                          <ul class="list-group list-group-flush" id="modalDetailsList2">
+                            <!-- More details will be inserted here by JavaScript -->
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Owner Details Tab -->
+                <div class="tab-pane fade" id="owner-tab-pane" role="tabpanel" aria-labelledby="owner-tab" tabindex="0">
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="card mb-4">
+                        <div class="card-header">
+                          <h5 class="mb-0">Owner Information</h5>
+                        </div>
+                        <div class="card-body" id="modalOwnerDetails">
+                          <!-- Owner details will be inserted here by JavaScript -->
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                      <div class="card mb-4">
+                        <div class="card-header">
+                          <h5 class="mb-0">Verification Status</h5>
+                        </div>
+                        <div class="card-body" id="modalVerificationStatus">
+                          <!-- Verification status will be inserted here by JavaScript -->
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Documents Tab -->
+                <div class="tab-pane fade" id="documents-tab-pane" role="tabpanel" aria-labelledby="documents-tab" tabindex="0">
+                  <div class="row">
+                    <div class="col-md-12 mb-4">
+                      <div class="card">
+                        <div class="card-header">
+                          <h5 class="mb-0">Document Verification</h5>
+                        </div>
+                        <div class="card-body" id="modalDocumentDetails">
+                          <!-- Document details will be inserted here by JavaScript -->
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Pricing Tab -->
+                <div class="tab-pane fade" id="pricing-tab-pane" role="tabpanel" aria-labelledby="pricing-tab" tabindex="0">
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="card mb-4">
+                        <div class="card-header">
+                          <h5 class="mb-0">Price Details</h5>
+                        </div>
+                        <div class="card-body">
+                          <div class="price-card">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                              <span>Final Price</span>
+                              <span class="price-value">₹<span id="modalPrice"></span></span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                              <span>Base Price</span>
+                              <span class="fw-bold">₹<span id="modalBasePrice"></span></span>
+                            </div>
+                          </div>
+                          <div id="modalPriceDetails">
+                            <!-- Price details will be inserted here by JavaScript -->
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                      <div class="card mb-4">
+                        <div class="card-header">
+                          <h5 class="mb-0">Bank Details</h5>
+                        </div>
+                        <div class="card-body" id="modalBankDetails">
+                          <!-- Bank details will be inserted here by JavaScript -->
+                        </div>
+                      </div>
+                      
+                      <div class="card mb-4">
+                        <div class="card-header">
+                          <h5 class="mb-0">GST Information</h5>
+                        </div>
+                        <div class="card-body" id="modalGstDetails">
+                          <!-- GST details will be inserted here by JavaScript -->
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-success" id="verifyDocumentsBtn">
+                <i class="fas fa-check-circle me-2"></i> Verify Documents
+              </button>
+              <button type="button" class="btn btn-warning" id="editPropertyBtn">
+                <i class="fas fa-edit me-2"></i> Edit Property
+              </button>
+              <button type="button" class="btn btn-primary" id="bookPropertyBtn">
+                <i class="fas fa-calendar-check me-2"></i> Book Now
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  <%- include('layout/footer') %>
+
+  <!-- Scripts -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+  <script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
+  <script src="https://cdn.datatables.net/responsive/2.4.1/js/responsive.bootstrap5.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.bootstrap5.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.print.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.colVis.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js"></script>
+  
+  <script>
+    $(document).ready(function() {
+      // Initialize tooltips
+      const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+      tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+      });
+      
+      // Initialize DataTable
+      const dataTable = $('#propertyTable').DataTable({
+        responsive: true,
+        language: {
+          search: "Search:",
+          lengthMenu: "Show _MENU_ entries per page",
+          info: "Showing _START_ to _END_ of _TOTAL_ properties"
+        },
+        dom: 'Bfrtip',
+        buttons: [
+          {
+            extend: 'collection',
+            text: '<i class="fas fa-download me-1"></i> Export',
+            buttons: [
+              {
+                extend: 'excel',
+                text: '<i class="fas fa-file-excel me-1"></i> Excel',
+                exportOptions: {
+                  columns: [1, 2, 3, 4, 5, 6, 7, 8]
+                }
+              },
+              {
+                extend: 'csv',
+                text: '<i class="fas fa-file-csv me-1"></i> CSV',
+                exportOptions: {
+                  columns: [1, 2, 3, 4, 5, 6, 7, 8]
+                }
+              },
+              {
+                extend: 'pdf',
+                text: '<i class="fas fa-file-pdf me-1"></i> PDF',
+                exportOptions: {
+                  columns: [1, 2, 3, 4, 5, 6, 7, 8]
+                }
+              },
+              {
+                extend: 'print',
+                text: '<i class="fas fa-print me-1"></i> Print',
+                exportOptions: {
+                  columns: [1, 2, 3, 4, 5, 6, 7, 8]
+                }
+              }
+            ]
+          },
+          {
+            extend: 'colvis',
+            text: '<i class="fas fa-columns me-1"></i> Columns'
+          }
+        ],
+        columnDefs: [
+          { orderable: false, targets: [0, 9] }, // Disable sorting on image and actions columns
+          { responsivePriority: 1, targets: [2, 3] }, // Title and price are most important
+          { responsivePriority: 2, targets: [1, 7] }, // Type and status are next important
+          { responsivePriority: 3, targets: [4, 5, 6, 8] } // Other columns can be hidden on smaller screens
+        ],
+        order: [[8, 'desc']] // Sort by created date by default
+      });
+      
+      // Custom search box
+      $('#quickSearch').on('keyup', function() {
+        dataTable.search(this.value).draw();
+      });
+      
+      // Listing type filter
+      $('#listingTypeFilter').on('change', function() {
+        const val = $(this).val();
+        dataTable.column(1).search(val ? val === 'entireProperty' ? 'Entire Property' : 'Room Wise' : '').draw();
+      });
+      
+      // Category filter
+      $('#categoryFilter').on('change', function() {
+        const val = $(this).val();
+        dataTable.column(5).search(val).draw();
+      });
+      
+      // Filter form submission
+      $('#filterForm').on('submit', function(e) {
+        e.preventDefault();
+        const formData = $(this).serialize();
+        
+        $.ajax({
+          url: window.location.pathname,
+          type: 'GET',
+          data: formData,
+          dataType: 'json',
+          beforeSend: function() {
+            // Show loading indicator
+            $('.card-body').append('<div class="text-center py-4" id="loadingIndicator"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div><p class="mt-2">Searching properties...</p></div>');
+          },
+          success: function(response) {
+            $('#loadingIndicator').remove();
+            if (response.success) {
+              // Update URL with filter parameters
+              const url = new URL(window.location);
+              const formDataObj = new URLSearchParams(formData);
+              
+              for (const [key, value] of formDataObj.entries()) {
+                if (value) {
+                  url.searchParams.set(key, value);
+                } else {
+                  url.searchParams.delete(key);
+                }
+              }
+              
+              window.history.pushState({}, '', url);
+              
+              // Update the table and stats
+              updatePropertyDisplay(response.items);
+              updateStats(response.stats);
+              updateActiveFilters();
+            }
+          },
+          error: function(error) {
+            $('#loadingIndicator').remove();
+            console.error('Error:', error);
+            alert('An error occurred while searching. Please try again.');
+          }
+        });
+      });
+      
+      // Reset filters button
+      $('#resetFiltersBtn, #clearFiltersBtn').on('click', function() {
+        $('#filterForm')[0].reset();
+        $('#listingTypeFilter').val('');
+        $('#categoryFilter').val('');
+        $('#quickSearch').val('');
+        
+        // Clear URL parameters
+        const url = new URL(window.location);
+        url.search = '';
+        window.history.pushState({}, '', url);
+        
+        // Submit the form to reload with no filters
+        $('#filterForm').submit();
+      });
+      
+      // Remove individual filter
+      $(document).on('click', '.filter-badge .close', function() {
+        const filterType = $(this).parent().data('filter');
+        $(`#${filterType}`).val('');
+        $('#filterForm').submit();
+      });
+      
+
+// View details button click - Use data from the row instead of making an AJAX call
+$(document).on('click', '.view-details, .property-row', function(e) {
+  if ($(this).hasClass('property-row') && ($(e.target).hasClass('btn') || $(e.target).closest('.btn').length)) {
+    return; // Don't trigger if clicking on a button inside the row
+  }
+  
+  // Show loading indicator in modal
+  $('#propertyModal .modal-body').html('<div class="text-center py-5"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div><p class="mt-3">Loading property details...</p></div>');
+  $('#propertyModal').modal('show');
+  
+  try {
+    const row = $(this).closest('tr');
+    const propertyId = row.attr('data-id');
+    console.log("Property ID:", propertyId);
+    
+    // Get property data from attribute
+    const propertyDataStr = row.attr('data-property');
+    console.log("Raw property data:", propertyDataStr ? propertyDataStr.substring(0, 100) + "..." : "undefined");
+    
+    if (!propertyDataStr) {
+      throw new Error("Property data not found in row attribute");
+    }
+    
+    // Parse the property data
+    const item = JSON.parse(propertyDataStr);
+    console.log("Parsed property data:", item);
+    
+    // Populate modal with the property data
+    populateModal(item);
+    
+    // Show the first tab
+    $('#propertyModalTabs button:first').tab('show');
+  } catch (error) {
+    console.error('Error parsing property data:', error, error.stack);
+    $('#propertyModal .modal-body').html(`
+      <div class="alert alert-danger">
+        <h5>Error loading property details</h5>
+        <p>${error.message}</p>
+        <p>Please try using the alternative method below:</p>
+        <button id="fetchPropertyAjax" class="btn btn-primary mt-2">Fetch Property Data via AJAX</button>
+      </div>
+    `);
+    
+    // Add event listener for the AJAX fallback button
+    $('#fetchPropertyAjax').on('click', function() {
+      const propertyId = row.attr('data-id');
+      if (!propertyId) {
+        $('#propertyModal .modal-body').html('<div class="alert alert-danger">Property ID not found.</div>');
+        return;
+      }
+
+      
+      
+      // Fetch property details via AJAX as fallback
+      $.ajax({
+        url: `/admin/property/${propertyId}`,
+        type: 'GET',
+        dataType: 'json',
+        beforeSend: function() {
+          $('#propertyModal .modal-body').html('<div class="text-center py-5"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div><p class="mt-3">Loading property details via AJAX...</p></div>');
+        },
+        success: function(response) {
+          if (response.success) {
+            populateModal(response.property);
+            $('#propertyModalTabs button:first').tab('show');
+          } else {
+            $('#propertyModal .modal-body').html(`<div class="alert alert-danger">${response.error || 'Failed to load property details'}</div>`);
+          }
+        },
+        error: function(error) {
+          console.error('AJAX Error:', error);
+          $('#propertyModal .modal-body').html('<div class="alert alert-danger">An error occurred while loading property details. Please try again.</div>');
+        }
+      });
+    });
+  }
+});
+      
+      // Toggle between table and grid view
+      $('#gridViewBtn').on('click', function() {
+        $(this).addClass('active').siblings().removeClass('active');
+        // Implementation for grid view would go here
+        alert('Grid view will be implemented soon');
+      });
+      
+      $('#tableViewBtn').on('click', function() {
+        $(this).addClass('active').siblings().removeClass('active');
+        // Already in table view
+      });
+      
+      // Add new property button
+      $('#addPropertyBtn').on('click', function() {
+        alert('Add new property functionality will be implemented soon');
+      });
+      
+      // Find the function to populate modal with item details
+      // Replace the populateModal function with this enhanced version that shows all data
+
+      // Function to populate modal with item details
+      function populateModal(item) {
+        console.log("Populating modal with data:", item); // Debug log to see all available data
+        
+        // Reset tabs content
+        $('#property-tab-pane, #owner-tab-pane, #documents-tab-pane, #pricing-tab-pane').empty();
+        
+        // Set modal title
+        $('#propertyModalLabel').text('Property Details');
+        $('#modalTitle').text(item.cardTitle);
+        
+        // Set address
+        if (item.PropertyAddress) {
+          const address = `${item.PropertyAddress.fullAddress || item.PropertyAddress.mapAddress || ''}`;
+          $('#modalAddress span').text(address);
+          $('#modalAddress').show();
+        } else {
+          $('#modalAddress').hide();
+        }
+        
+        // Set price details
+        $('#modalPrice').text(item.finalPrice.toLocaleString('en-IN'));
+        $('#modalBasePrice').text(item.priceDetails.base.toLocaleString('en-IN'));
+        
+        // Clear previous details
+        $('#modalDetailsList1').empty();
+        $('#modalDetailsList2').empty();
+        $('#modalPriceDetails').empty();
+        $('#modalOwnerDetails').empty();
+        $('#modalVerificationStatus').empty();
+        $('#modalDocumentDetails').empty();
+        $('#modalBankDetails').empty();
+        $('#modalGstDetails').empty();
+        
+        // Add property details - Basic Info
+        $('#modalDetailsList1').append(`
+          <li class="list-group-item d-flex justify-content-between">
+            <span class="detail-label">Property ID</span>
+            <span class="detail-value">${item.propertyId}</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between">
+            <span class="detail-label">Category</span>
+            <span class="detail-value">${item.category}</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between">
+            <span class="detail-label">Listing Type</span>
+            <span class="detail-value">${item.listingType === 'entireProperty' ? 'Entire Property' : 'Room Wise'}</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between">
+            <span class="detail-label">Check-in Time</span>
+            <span class="detail-value">${formatTime(item.cheakInTime)}</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between">
+            <span class="detail-label">Check-out Time</span>
+            <span class="detail-value">${formatTime(item.cheakOutTime)}</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between">
+            <span class="detail-label">Created At</span>
+            <span class="detail-value">${formatDate(item.createdAt)} ${formatTime(item.createdAt)}</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between">
+            <span class="detail-label">Last Updated</span>
+            <span class="detail-value">${formatDate(item.updatedAt)} ${formatTime(item.updatedAt)}</span>
+          </li>
+        `);
+        
+        // Add property details - Full Property Info
+        if (item.fullproperty) {
+          $('#modalDetailsList2').append(`
+            <li class="list-group-item d-flex justify-content-between">
+              <span class="detail-label">Total Rooms</span>
+              <span class="detail-value">${item.fullproperty.totalRooms || 'N/A'}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between">
+              <span class="detail-label">Max Attendants</span>
+              <span class="detail-value">${item.fullproperty.maxAttendant || 'N/A'}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between">
+              <span class="detail-label">Status</span>
+              <span class="detail-value badge ${item.fullproperty.status === 'approved' ? 'bg-success' : item.fullproperty.status === 'rejected' ? 'bg-danger' : 'bg-warning'}">${item.fullproperty.status || 'N/A'}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between">
+              <span class="detail-label">Extra Bed</span>
+              <span class="detail-value">${item.fullproperty.addextrabed ? 'Available' : 'Not Available'}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between">
+              <span class="detail-label">Extra Bed Charge</span>
+              <span class="detail-value">₹${item.fullproperty.addextrabed_charge?.toLocaleString('en-IN') || '0'}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between">
+              <span class="detail-label">Extra Guest Charge</span>
+              <span class="detail-value">₹${item.fullproperty.extraguistcharge?.toLocaleString('en-IN') || '0'}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between">
+              <span class="detail-label">Room Types</span>
+              <span class="detail-value">
+                ${item.fullproperty.roomTypes?.single ? 'Single, ' : ''}
+                ${item.fullproperty.roomTypes?.double ? 'Double' : ''}
+                ${!item.fullproperty.roomTypes?.single && !item.fullproperty.roomTypes?.double ? 'N/A' : ''}
+              </span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between">
+              <span class="detail-label">Single Rooms</span>
+              <span class="detail-value">${item.fullproperty.totalSingleRooms || '0'}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between">
+              <span class="detail-label">Double Rooms</span>
+              <span class="detail-value">${item.fullproperty.totalDoubleRooms || '0'}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between">
+              <span class="detail-label">Washroom Style</span>
+              <span class="detail-value">${item.fullproperty.washroomStyle || 'N/A'}</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between">
+              <span class="detail-label">Washroom Type</span>
+              <span class="detail-value">${item.fullproperty.washroomType || 'N/A'}</span>
+            </li>
+          `);
+        }
+        
+        // Add detailed address information
+        if (item.PropertyAddress) {
+          $('#modalDetailsList2').append(`
+            <li class="list-group-item">
+              <span class="detail-label">Address Details</span>
+              <div class="mt-2">
+                <div class="row">
+                  <div class="col-md-6">
+                    <p class="mb-1"><strong>City:</strong> ${item.PropertyAddress.city || 'N/A'}</p>
+                    <p class="mb-1"><strong>State:</strong> ${item.PropertyAddress.state || 'N/A'}</p>
+                    <p class="mb-1"><strong>Pincode:</strong> ${item.PropertyAddress.pincode || 'N/A'}</p>
+                  </div>
+                  <div class="col-md-6">
+                    <p class="mb-1"><strong>Latitude:</strong> ${item.PropertyAddress.latitude || 'N/A'}</p>
+                    <p class="mb-1"><strong>Longitude:</strong> ${item.PropertyAddress.longitude || 'N/A'}</p>
+                    <p class="mb-1"><strong>Nearby:</strong> ${item.PropertyAddress.nearby || 'N/A'}</p>
+                  </div>
+                </div>
+              </div>
+            </li>
+          `);
+        }
+        
+        // Add amenities if available
+        if (item.propertyaminities) {
+          $('#modalDetailsList2').append(`
+            <li class="list-group-item">
+              <span class="detail-label">Amenities</span>
+              <div class="mt-2">
+                <p class="text-muted">Amenities ID: ${item.propertyaminities}</p>
+                <p class="text-muted">For detailed amenities, please check the property management system.</p>
+              </div>
+            </li>
+          `);
+        }
+        
+        // Add price details
+        let priceDetailsHtml = '';
+        
+        // Day-wise prices
+        if (item.priceDetails.dayWise && Object.keys(item.priceDetails.dayWise).length > 0) {
+          priceDetailsHtml += `
+            <div class="mt-4">
+              <h6 class="fw-bold mb-3">Day-wise Prices</h6>
+              <div class="table-responsive">
+                <table class="table table-sm table-bordered">
+                  <thead>
+                    <tr>
+                      <th>Day</th>
+                      <th>Price (₹)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+          `;
+          
+          for (const [day, price] of Object.entries(item.priceDetails.dayWise)) {
+            priceDetailsHtml += `
+              <tr>
+                <td>${day}</td>
+                <td class="text-end">${parseInt(price).toLocaleString('en-IN')}</td>
+              </tr>
+            `;
+          }
+          
+          priceDetailsHtml += `
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          `;
+        }
+        
+        // Occasion prices
+        if (item.priceDetails.occasions && item.priceDetails.occasions.length > 0) {
+          priceDetailsHtml += `
+            <div class="mt-4">
+              <h6 class="fw-bold mb-3">Occasion Prices</h6>
+              <div class="table-responsive">
+                <table class="table table-sm table-bordered">
+                  <thead>
+                    <tr>
+                      <th>Occasion</th>
+                      <th>Dates</th>
+                      <th>Price (₹)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+          `;
+          
+          item.priceDetails.occasions.forEach(occ => {
+            priceDetailsHtml += `
+              <tr>
+                <td>${occ.name}</td>
+                <td>${formatDate(occ.startDate)} - ${formatDate(occ.endDate)}</td>
+                <td class="text-end">${parseInt(occ.price).toLocaleString('en-IN')}</td>
+              </tr>
+            `;
+          });
+          
+          priceDetailsHtml += `
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          `;
+        }
+        
+        // Discount
+        if (item.priceDetails.discount && item.priceDetails.discount.isActive) {
+          priceDetailsHtml += `
+            <div class="alert alert-success mt-4">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <h6 class="fw-bold mb-1">Discount Available</h6>
+                  <p class="mb-0">Get ${item.priceDetails.discount.percentage}% off</p>
+                </div>
+                <div class="badge bg-success">${item.priceDetails.discount.percentage}% OFF</div>
+              </div>
+              <hr>
+              <small>Bookings Limit: ${item.priceDetails.discount.bookingsLimit}, Used: ${item.priceDetails.discount.usedCount}</small>
+            </div>
+          `;
+        } else if (item.priceDetails.discount) {
+          priceDetailsHtml += `
+            <div class="alert alert-secondary mt-4">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <h6 class="fw-bold mb-1">Discount Information</h6>
+                  <p class="mb-0">Discount is currently inactive</p>
+                </div>
+                <div class="badge bg-secondary">INACTIVE</div>
+              </div>
+              <hr>
+              <small>Percentage: ${item.priceDetails.discount.percentage}%, Bookings Limit: ${item.priceDetails.discount.bookingsLimit}, Used: ${item.priceDetails.discount.usedCount}</small>
+            </div>
+          `;
+        }
+        
+        $('#modalPriceDetails').html(priceDetailsHtml);
+        
+        // Add owner details
+        if (item.user) {
+          $('#modalOwnerDetails').html(`
+            <div class="d-flex align-items-center mb-3">
+              <div class="user-avatar me-3" style="width: 50px; height: 50px; font-size: 1.2rem;">
+                ${item.user.name ? item.user.name.charAt(0) : 'U'}
+              </div>
+              <div>
+                <h6 class="mb-0">${item.user.name || 'Unknown'}</h6>
+                <span class="badge ${item.user.role === 'Admin' ? 'bg-danger' : item.user.role === 'Host' ? 'bg-primary' : 'bg-secondary'}">${item.user.role || 'User'}</span>
+              </div>
+            </div>
+            <div class="mb-2">
+              <i class="fas fa-envelope me-2 text-muted"></i> ${item.user.email || 'No email'}
+            </div>
+            <div class="mb-2">
+              <i class="fas fa-circle me-2 ${item.user.status === 'Active' ? 'text-success' : 'text-danger'}"></i> 
+              <span class="${item.user.status === 'Active' ? 'status-active' : 'status-inactive'}">${item.user.status || 'Unknown'}</span>
+            </div>
+            <div class="mb-2">
+              <i class="fas fa-id-card me-2 text-muted"></i> 
+              <span>Document Verification: ${item.user.documentverification ? '<span class="badge bg-success">Verified</span>' : '<span class="badge bg-warning">Pending</span>'}</span>
+            </div>
+            <div class="mb-2">
+              <i class="fas fa-check-circle me-2 text-muted"></i> 
+              <span>Email Verification: ${item.user.isVerified ? '<span class="badge bg-success">Verified</span>' : '<span class="badge bg-warning">Pending</span>'}</span>
+            </div>
+            <div class="mt-3">
+              <small class="text-muted">
+                <i class="fas fa-clock me-1"></i> Joined: ${item.user.createdAt ? moment(item.user.createdAt).format('DD MMM YYYY') : 'Unknown'}
+              </small>
+            </div>
+            <div class="mt-2">
+              <small class="text-muted">
+                <i class="fas fa-clock me-1"></i> Last Updated: ${item.user.updatedAt ? moment(item.user.updatedAt).format('DD MMM YYYY') : 'Unknown'}
+              </small>
+            </div>
+          `);
+          
+          // Add verification status
+          const verificationStatus = item.userDocVerification?.isVerified ? 'Verified' : 'Pending Verification';
+          const verificationBadge = item.userDocVerification?.isVerified ? 'bg-success' : 'bg-warning';
+          
+          $('#modalVerificationStatus').html(`
+            <div class="text-center mb-4">
+              <div class="mb-3">
+                <span class="badge ${verificationBadge} p-2" style="font-size: 1rem;">
+                  <i class="fas ${item.userDocVerification?.isVerified ? 'fa-check-circle' : 'fa-clock'} me-2"></i>
+                  ${verificationStatus}
+                </span>
+              </div>
+              <p>${item.userDocVerification?.isVerified ? 'All documents have been verified successfully.' : 'Documents are pending verification by an administrator.'}</p>
+            </div>
+            <div class="d-flex justify-content-between">
+              <div>
+                <p class="mb-1"><strong>Owner Type:</strong></p>
+                <p>${item.userDocVerification?.ownerType === 'single' ? 'Single Owner' : 'Multiple Owners'}</p>
+              </div>
+              <div>
+                <p class="mb-1"><strong>Verification Date:</strong></p>
+                <p>${item.userDocVerification?.updatedAt ? moment(item.userDocVerification.updatedAt).format('DD MMM YYYY') : 'N/A'}</p>
+              </div>
+            </div>
+          `);
+        } else {
+          $('#modalOwnerDetails').html(`
+            <div class="text-center py-4">
+              <i class="fas fa-user-slash text-muted mb-3" style="font-size: 2rem;"></i>
+              <p>No owner information available</p>
+            </div>
+          `);
+          $('#modalVerificationStatus').html(`
+            <div class="text-center py-4">
+              <i class="fas fa-file-excel text-muted mb-3" style="font-size: 2rem;"></i>
+              <p>No document information available</p>
+            </div>
+          `);
+        }
+        
+        // Add document details
+        if (item.userDocVerification && item.userDocVerification.documents && item.userDocVerification.documents.length > 0) {
+          let documentDetailsHtml = '';
+          item.userDocVerification.documents.forEach((doc, index) => {
+            documentDetailsHtml += `
+              <div class="document-card">
+                <div class="document-card-header">
+                  Document ${index + 1}
+                  ${doc.isVerified ? '<span class="badge bg-success float-end">Verified</span>' : '<span class="badge bg-warning float-end">Pending</span>'}
+                </div>
+                <div class="document-card-body">
+                  <img src="${doc.path}" alt="Document Image" class="document-img">
+                  <p><strong>Type:</strong> ${doc.documentType || 'N/A'}</p>
+                  <p><strong>Uploaded At:</strong> ${moment(doc.uploadedAt).format('DD MMM YYYY, hh:mm A')}</p>
+                  <p><strong>Verification Status:</strong> ${doc.isVerified ? 'Verified' : 'Pending'}</p>
+                </div>
+              </div>
+            `;
+          });
+          $('#modalDocumentDetails').html(documentDetailsHtml);
+        } else {
+          $('#modalDocumentDetails').html(`
+            <div class="text-center py-4">
+              <i class="fas fa-file-alt text-muted mb-3" style="font-size: 2rem;"></i>
+              <p>No documents available</p>
+            </div>
+          `);
+        }
+        
+        // Add bank details
+        if (item.user && item.user.bankDetails) {
+          $('#modalBankDetails').html(`
+            <p><strong>Account Name:</strong> ${item.user.bankDetails.accountName || 'N/A'}</p>
+            <p><strong>Account Number:</strong> ${item.user.bankDetails.accountNumber || 'N/A'}</p>
+            <p><strong>Bank Name:</strong> ${item.user.bankDetails.bankName || 'N/A'}</p>
+            <p><strong>IFSC Code:</strong> ${item.user.bankDetails.ifscCode || 'N/A'}</p>
+          `);
+        } else {
+          $('#modalBankDetails').html('<p>No bank details available</p>');
+        }
+        
+        // Add GST details
+        if (item.user && item.user.gstDetails) {
+          $('#modalGstDetails').html(`
+            <p><strong>GST Number:</strong> ${item.user.gstDetails.gstNumber || 'N/A'}</p>
+            <p><strong>Company Name:</strong> ${item.user.gstDetails.companyName || 'N/A'}</p>
+            <p><strong>Address:</strong> ${item.user.gstDetails.address || 'N/A'}</p>
+          `);
+        } else {
+          $('#modalGstDetails').html('<p>No GST details available</p>');
+        }
+        
+        // Carousel indicators and images
+        const carouselIndicators = $('#modalCarouselIndicators');
+        const carouselInner = $('#modalCarouselInner');
+        carouselIndicators.empty();
+        carouselInner.empty();
+        
+        if (item.cardImages && item.cardImages.length > 0) {
+          item.cardImages.forEach((image, index) => {
+            const activeClass = index === 0 ? 'active' : '';
+            carouselIndicators.append(`
+              <li data-bs-target="#propertyCarousel" data-bs-slide-to="${index}" class="${activeClass}"></li>
+            `);
+            carouselInner.append(`
+              <div class="carousel-item ${activeClass}">
+                <img src="/${image.path}" class="d-block w-100 modal-img" alt="Property Image">
+              </div>
+            `);
+          });
+        } else {
+          carouselInner.append(`
+            <div class="carousel-item active">
+              <div class="d-flex align-items-center justify-content-center bg-light" style="height: 300px;">
+                <i class="fas fa-image text-muted" style="font-size: 3rem;"></i>
+              </div>
+            </div>
+          `);
+        }
+      }
+      
+      // Helper function to format time
+      function formatTime(dateTime) {
+        return moment(dateTime).format('hh:mm A');
+      }
+      
+      // Helper function to format date
+      function formatDate(dateTime) {
+        return moment(dateTime).format('DD MMM YYYY');
+      }
+      
+      // Function to update property display
+      function updatePropertyDisplay(properties) {
+        // Clear existing table rows
+        $('#propertyTable tbody').empty();
+        
+        if (properties && properties.length > 0) {
+          properties.forEach(function(item) {
+            $('#propertyTable tbody').append(`
+              <tr class="property-row" data-id="${item.propertyId}" data-type="${item.type}" data-property='${JSON.stringify(item).replace(/'/g, "&#39;")}' >
+                <td>
+                  ${item.cardImages && item.cardImages.length > 0 ? `<img src="/${item.cardImages[0].path}" class="property-img" alt="${item.cardTitle}">` : `<div class="property-img d-flex align-items-center justify-content-center bg-light"><i class="fas fa-image text-muted"></i></div>`}
+                </td>
+                <td>
+                  <span class="badge ${item.listingType} text-dark">
+                    ${item.listingType === 'entireProperty' ? 'Entire Property' : 'Room Wise'}
+                  </span>
+                </td>
+                <td><strong>${item.cardTitle}</strong></td>
+                <td class="price-tag">₹${item.finalPrice.toLocaleString('en-IN')}</td>
+                <td>
+                  ${item.PropertyAddress ? `<i class="fas fa-map-marker-alt text-danger me-1"></i>${item.PropertyAddress.city || 'N/A'}, ${item.PropertyAddress.state || 'N/A'} ${item.PropertyAddress.pincode ? `<small class="text-muted">${item.PropertyAddress.pincode}</small>` : ''}` : '<span class="text-muted">No address</span>'}
+                </td>
+                <td><span class="badge bg-secondary">${item.category}</span></td>
+                <td>
+                  ${item.user ? `<div class="user-info"><div class="user-avatar">${item.user.name ? item.user.name.charAt(0) : 'U'}</div><div><div>${item.user.name || 'Unknown'}</div><small class="text-muted">${item.user.role || 'User'}</small></div></div>` : '<span class="text-muted">Unknown</span>'}
+                </td>
+                <td>
+                  ${item.user && item.user.status ? `<span class="${item.user.status === 'Active' ? 'status-active' : 'status-inactive'}">${item.user.status}</span>` : '<span class="text-muted">Unknown</span>'}
+                </td>
+                <td>
+                  <div>${moment(item.createdAt).format('DD MMM YYYY')}</div>
+                  <small class="text-muted">${moment(item.createdAt).format('hh:mm A')}</small>
+                </td>
+                <td>
+                  <div class="d-flex">
+                    <button class="btn btn-sm btn-primary btn-action view-details" data-id="${item.propertyId}" data-type="${item.type}" data-bs-toggle="tooltip" title="View Details">
+                      <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="btn btn-sm btn-warning btn-action ms-1" data-bs-toggle="tooltip" title="Edit">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-sm btn-danger btn-action ms-1" data-bs-toggle="tooltip" title="Delete">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            `);
+          });
+          
+          // Re-initialize DataTable
+          $('#propertyTable').DataTable().destroy();
+          $('#propertyTable').DataTable({
+            responsive: true,
+            language: {
+              search: "Search:",
+              lengthMenu: "Show _MENU_ entries per page",
+              info: "Showing _START_ to _END_ of _TOTAL_ properties"
+            },
+            dom: 'Bfrtip',
+            buttons: [
+              {
+                extend: 'collection',
+                text: '<i class="fas fa-download me-1"></i> Export',
+                buttons: [
+                  {
+                    extend: 'excel',
+                    text: '<i class="fas fa-file-excel me-1"></i> Excel',
+                    exportOptions: {
+                      columns: [1, 2, 3, 4, 5, 6, 7, 8]
+                    }
+                  },
+                  {
+                    extend: 'csv',
+                    text: '<i class="fas fa-file-csv me-1"></i> CSV',
+                    exportOptions: {
+                      columns: [1, 2, 3, 4, 5, 6, 7, 8]
+                    }
+                  },
+                  {
+                    extend: 'pdf',
+                    text: '<i class="fas fa-file-pdf me-1"></i> PDF',
+                    exportOptions: {
+                      columns: [1, 2, 3, 4, 5, 6, 7, 8]
+                    }
+                  },
+                  {
+                    extend: 'print',
+                    text: '<i class="fas fa-print me-1"></i> Print',
+                    exportOptions: {
+                      columns: [1, 2, 3, 4, 5, 6, 7, 8]
+                    }
+                  }
+                ]
+              },
+              {
+                extend: 'colvis',
+                text: '<i class="fas fa-columns me-1"></i> Columns'
+              }
+            ],
+            columnDefs: [
+              { orderable: false, targets: [0, 9] }, // Disable sorting on image and actions columns
+              { responsivePriority: 1, targets: [2, 3] }, // Title and price are most important
+              { responsivePriority: 2, targets: [1, 7] }, // Type and status are next important
+              { responsivePriority: 3, targets: [4, 5, 6, 8] } // Other columns can be hidden on smaller screens
+            ],
+            order: [[8, 'desc']] // Sort by created date by default
+          });
+        } else {
+          $('#propertyTable tbody').html(`
+            <tr>
+              <td colspan="10" class="text-center">No properties found</td>
+            </tr>
+          `);
+        }
+      }
+      
+      // Function to update stats
+      function updateStats(stats) {
+        $('.stat-value').each(function() {
+          const statType = $(this).closest('.stat-card').find('.stat-icon').attr('class').split(' ')[1];
+          switch (statType) {
+            case 'properties':
+              $(this).text(stats.totalProperties);
+              break;
+            case 'users':
+              $(this).text(stats.totalVerifiedOwners);
+              break;
+            case 'revenue':
+              $(this).text(stats.totalValue.toLocaleString('en-IN'));
+              break;
+          }
+        });
+      }
+      
+      // Function to update active filters
+      function updateActiveFilters() {
+        const filters = {};
+        $('#filterForm').serializeArray().forEach(item => {
+          if (item.value) {
+            filters[item.name] = item.value;
+          }
+        });
+        
+        let activeFiltersHtml = '';
+        if (Object.keys(filters).length > 0) {
+          activeFiltersHtml += '<div class="mb-2">Active Filters:</div>';
+          for (const key in filters) {
+            if (filters.hasOwnProperty(key)) {
+              let filterLabel = key;
+              let filterValue = filters[key];
+              
+              switch (key) {
+                case 'location':
+                  filterLabel = 'Location';
+                  break;
+                case 'search':
+                  filterLabel = 'Search';
+                  break;
+                case 'minPrice':
+                  filterLabel = 'Min Price';
+                  filterValue = `₹${filterValue}`;
+                  break;
+                case 'maxPrice':
+                  filterLabel = 'Max Price';
+                  filterValue = `₹${filterValue}`;
+                  break;
+                case 'propertyType':
+                  filterLabel = 'Type';
+                  filterValue = filterValue === 'entireProperty' ? 'Entire Property' : 'Room Wise';
+                  break;
+                case 'status':
+                  filterLabel = 'Status';
+                  break;
+              }
+              
+              activeFiltersHtml += `
+                <span class="filter-badge" data-filter="${key}">
+                  ${filterLabel}: ${filterValue}
+                  <i class="fas fa-times close"></i>
+                </span>
+              `;
+            }
+          }
+        }
+        
+        $('#activeFilters').html(activeFiltersHtml);
+      }
+    });
+  </script>
+</body>
+</html>
